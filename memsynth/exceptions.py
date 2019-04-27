@@ -19,7 +19,7 @@ class MemSynthBaseError(Exception):
 
 
 class LoadMembershipListException(MemSynthBaseError):
-    """An error that is raised when a membership list cannot be raised
+    """An error that is raised when a membership list cannot be loaded
 
     This is an error that is raised because of a formatting or other error
     involved in loading the membership list.
