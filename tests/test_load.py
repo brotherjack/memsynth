@@ -47,3 +47,9 @@ def test_wrong_number_of_cols(memsynther, col, add_or_del):
         else:
             memsynther.df.drop(col, 1, inplace=True)
         memsynther._verify_memlist_format()
+
+def test_expectation_formation():
+    assert False
+
+def test_verification_of_data_integrity(memsynther):
+    assert False

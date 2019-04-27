@@ -37,3 +37,21 @@ class LoadMembershipListException(MemSynthBaseError):
         else:
             msg = f"An error has occurred in loading membership data. {msg}"
         super().__init__(memsynth_obj, msg=msg)
+
+
+class MembershipListIntegrityExcepton(MemSynthBaseError):
+    """An error that is raised when the data in the membership list is wrong
+
+    This error is raised when the data in a loaded membership list does not
+    match what is expected in the configuration file.
+
+
+    :param memsynth_obj: the MemSynther class that is raising the error
+    :param expectation: (`memsynth.MembershipListIntegrityExcepton`) The
+        failed expectation.
+    """
+    def __init__(self, memsynth_obj, expectation):
+        super().__init__(
+            memsynth_obj,
+            msg=f"There was an error in '{expectation.col}': {expectation.err}"
+        )

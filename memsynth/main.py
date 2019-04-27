@@ -8,12 +8,18 @@ import pandas as pd
 from memsynth.config import EXPECTED_FORMAT_MEM_LIST
 from memsynth.exceptions import LoadMembershipListException
 
+
+class MemExpectation():
+    """An expectation that a column of data is expected to conform to
+    """
+    pass
+
+
 class MemSynther():
     """Core class of the MemSynth program.
 
     This class manages membership list files, coordinates with local and
     remote databases, and API's
-
     """
     def __init__(self):
         self.df = None
@@ -27,7 +33,7 @@ class MemSynther():
         :param fname: File name of the excel file with membership data,
             if None the `MemSynther` attempts to read from `df` parameter
         :return `pandas.DataFrame`: Returns the membership list, if verified
-        :raises LoadMembershipListException: If the format does not match
+        :raises `LoadMembershipListException`: If the format does not match
             the one listed in `EXPECTED_FORMAT_MEM_LIST` the config file or
             if a filename is not supplied and the membership list hasn't been
             loaded from a variable in memory,
@@ -65,6 +71,22 @@ class MemSynther():
                 )
         else:
             return df
+
+    def verify_memlist_data_integrity(self, config, verify_format=False):
+        """Checks the data of a loaded membership list to verify integrity
+
+        Checks the data in the membership dataframe against the configuration
+        data and make's sure that it matches expectations.
+
+        :param verify_format: (boolean, default False) If True, runs
+            `_verify_memlist_format` before anything else in this method
+        :param config: (dict) The keys are columns and the values are lists
+            of `MemExpectation` classes that need to pass for the data in the
+            column to be considered correct.
+        :return: (boolean) If all columns pass
+        :raises `MembershipListIntegrityExcepton`: If a column fails
+        """
+        pass
 
     def load_from_excel(self, flist):
         """Loads a membership list from an excel file

@@ -33,3 +33,4 @@ EXPECTED_FORMAT_MEM_LIST = {
         "monthly_status"
     ]
 }
+
