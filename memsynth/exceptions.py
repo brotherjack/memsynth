@@ -55,3 +55,31 @@ class MembershipListIntegrityExcepton(MemSynthBaseError):
             memsynth_obj,
             msg=f"There was an error in '{expectation.col}': {expectation.err}"
         )
+
+
+class MemExpectationBaseError(Exception):
+    """A base exception for all MemExpectation specific errors
+
+    All MemExpectation errors should inherit from this base class
+
+    :param col: (string) the column that the expectation refers to
+    :param msg: (string, default None) an informative error message
+    """
+    def __init__(self, col, msg=None):
+        if msg is None:
+            msg = f"An error occurred in column '{col}': '{msg}'"
+        super().__init__(msg)
+
+
+class MemExpectationFormationError(MemExpectationBaseError):
+    """An error raised when the MemExpectation encounters an error in forming
+
+    This error is raised when the MemExpectation class encounters an error in
+    forming, such as an unidentified paramater
+
+    :param col: (string) the column that the expectation refers to
+    :param msg: (string, default None) an informative error message
+    """
+    def __init__(self, col, msg=None):
+        msg = f"There is an error in forming an exception for '{col}': {msg}"
+        super().__init__(col, msg)

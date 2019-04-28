@@ -6,13 +6,38 @@ Orlando DSA's membership list updating and maintaince solution.
 import pandas as pd
 
 from memsynth.config import EXPECTED_FORMAT_MEM_LIST
-from memsynth.exceptions import LoadMembershipListException
+import memsynth.exceptions as ex
 
 
 class MemExpectation():
     """An expectation that a column of data is expected to conform to
+
+    :param col: (str) Name of the column the expectation refers to
+    :param expectation: (dict) The various parameters of the expectation
+        and an expectation of what the data is to conform to
     """
-    pass
+    def  __init__(self, col, expectation):
+        self.col = col
+        self._acceptable_parameters = [
+            "data_type",
+            "regex",
+            "nullable"
+        ]
+        self._form_expectation(expectation)
+
+    def _form_expectation(self, params):
+        for k,v in params.items():
+            if k not in self._acceptable_parameters:
+                raise ex.MemExpectationFormationError(
+                    self.col, f"{k} is not a recognized col. "
+                    f"These are {self._acceptable_parameters}"
+                )
+            setattr(self, k, v)
+        if not hasattr(self, "data_type"):
+            raise ex.MemExpectationFormationError(
+                self.col, "There is no data_type for column"
+            )
+        self.is_an_expectation = True
 
 
 class MemSynther():
@@ -43,7 +68,7 @@ class MemSynther():
         elif not fname and hasattr(self.df, "columns"):
             df = self.df
         else:
-            raise LoadMembershipListException(
+            raise ex.LoadMembershipListException(
                 f"No filename passed to MemSynther and no dataframe loaded "
                 f"from memory."
             )
@@ -51,18 +76,18 @@ class MemSynther():
         actual_cols = set(df.columns)
         if expected_cols != actual_cols:
             if expected_cols.issuperset(actual_cols):
-                raise LoadMembershipListException(
+                raise ex.LoadMembershipListException(
                     f"The membership list appears to be missing the "
                     f"following columns '{expected_cols.difference(actual_cols)}'"
                 )
             elif actual_cols.issuperset(expected_cols):
-                raise LoadMembershipListException(
+                raise ex.LoadMembershipListException(
                     f"The membership list appears to have added new columns "
                     f"that need to be added. These columns are the following "
                     f"{actual_cols.difference(expected_cols)}"
                 )
             else:
-                raise LoadMembershipListException(
+                raise ex.LoadMembershipListException(
                     f"The membership list appears to be missing the "
                     f"following columns '{expected_cols.difference(actual_cols)}'"
                     f" and the membership list appears to have added new columns "
@@ -129,7 +154,7 @@ class MemSynther():
         try:
             self.df = pd.DataFrame(mem)
             self._verify_memlist_format()
-        except LoadMembershipListException as lmle:
+        except ex.LoadMembershipListException as lmle:
             print("Encountered a problem loading membership list from memory")
             self.df = None
             raise lmle

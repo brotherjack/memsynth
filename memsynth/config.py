@@ -34,3 +34,15 @@ EXPECTED_FORMAT_MEM_LIST = {
     ]
 }
 
+EXPECTATIONS = {
+    "AK_ID": {
+        "data_type": "integer",
+        "regex": "[0-9]+",
+        "nullable": False
+        },
+    "DSA_ID": {
+        "data_type": "integer",
+        "regex": "[0-9]+",
+        "nullable": True
+    },
+}

@@ -5,7 +5,7 @@ import pytest
 
 from memsynth import config
 from memsynth import exceptions
-from memsynth.main import MemSynther
+from memsynth.main import MemSynther, MemExpectation
 
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 
@@ -48,8 +48,14 @@ def test_wrong_number_of_cols(memsynther, col, add_or_del):
             memsynther.df.drop(col, 1, inplace=True)
         memsynther._verify_memlist_format()
 
-def test_expectation_formation():
-    assert False
+def test_expectation_encounters_an_incorrect_parameter():
+    with pytest.raises(exceptions.MemExpectationFormationError):
+        MemExpectation(
+            "AK_ID", {
+                    "data_type": "integer",
+                    "bad_param": "not_good"
+                }
+        )
 
 def test_verification_of_data_integrity(memsynther):
     assert False
