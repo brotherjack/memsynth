@@ -75,7 +75,12 @@ class MemSynther():
         expected_cols = set(EXPECTED_FORMAT_MEM_LIST.get("columns"))
         actual_cols = set(df.columns)
         if expected_cols != actual_cols:
-            if expected_cols.issuperset(actual_cols):
+            if actual_cols.intersection(expected_cols):
+                raise ex.LoadMembershipListException(
+                    "None of the columns match. Are you sure this is a "
+                    "membership file?"
+                )
+            elif expected_cols.issuperset(actual_cols):
                 raise ex.LoadMembershipListException(
                     f"The membership list appears to be missing the "
                     f"following columns '{expected_cols.difference(actual_cols)}'"
@@ -127,7 +132,7 @@ class MemSynther():
         """
         try:
             self.df = self._verify_memlist_format(flist)
-        except LoadMembershipListException as lmle:
+        except ex.LoadMembershipListException as lmle:
             print(f"Encountered a problem loading membership list {flist}")
             self.df = None
             raise lmle
