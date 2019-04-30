@@ -10,6 +10,11 @@ from memsynth.main import MemSynther, MemExpectation
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 
+AK_ID_CORRECT = {
+    "data_type": "integer",
+    "regex": "[0-9]+",
+    "nullable": False
+}
 
 @pytest.fixture
 def memsynther():
@@ -74,6 +79,14 @@ def test_expectation_encounters_an_incorrect_parameter():
                 }
         )
         assert "bad_param is not a recognized col." in str(ex.value)
+
+def test_correct_expectation_forms():
+    exp = MemExpectation('AK_ID', AK_ID_CORRECT)
+    assert exp.is_an_expectation
+
+def test_correct_regex_expectation_passes():
+    exp = MemExpectation('AK_ID', AK_ID_CORRECT)
+    assert hasattr(exp, "check") and exp.check()
 
 def test_verification_of_data_integrity(memsynther):
     assert False
