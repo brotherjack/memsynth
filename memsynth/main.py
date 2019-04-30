@@ -3,6 +3,8 @@
 Orlando DSA's membership list updating and maintaince solution.
 
 """
+import re
+
 import pandas as pd
 
 from memsynth.config import EXPECTED_FORMAT_MEM_LIST
@@ -33,12 +35,23 @@ class MemExpectation():
                     f"These are {self._acceptable_parameters}"
                 )
             setattr(self, k, v)
+            if hasattr(self, "regex") and k.startswith("regex"):
+                self.regex = re.compile(v)
         if not hasattr(self, "data_type"):
             raise ex.MemExpectationFormationError(
                 self.col, "There is no data_type for column"
             )
         self.is_an_expectation = True
 
+    def _check_regex(self, data):
+        return self.regex.match(data)
+
+    def check(self):
+        """Checks to see if the condition of the expectation are met
+
+        :return: (boolean)
+        """
+        raise NotImplementedError("This method is not ready yet")
 
 class MemSynther():
     """Core class of the MemSynth program.

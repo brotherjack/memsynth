@@ -22,6 +22,10 @@ def memsynther():
     memsynth.load_from_excel(FAKE_MEM_LIST)
     return memsynth
 
+@pytest.fixture
+def correct_ak_id_exp():
+    return MemExpectation('AK_ID', AK_ID_CORRECT)
+
 def test_load_bad_excel_file(memsynther):
     """Make sure that program can identify when the file is completely wrong
 
@@ -80,13 +84,14 @@ def test_expectation_encounters_an_incorrect_parameter():
         )
         assert "bad_param is not a recognized col." in str(ex.value)
 
-def test_correct_expectation_forms():
-    exp = MemExpectation('AK_ID', AK_ID_CORRECT)
-    assert exp.is_an_expectation
+def test_correct_expectation_forms(correct_ak_id_exp):
+    assert correct_ak_id_exp.is_an_expectation
 
-def test_correct_regex_expectation_passes():
-    exp = MemExpectation('AK_ID', AK_ID_CORRECT)
-    assert hasattr(exp, "check") and exp.check()
+def test_correct_regex_expectation_condition_passes(correct_ak_id_exp):
+    assert correct_ak_id_exp._check_regex("12345")
+
+def test_correct_expectation_passes(correct_ak_id_exp):
+    assert hasattr(correct_ak_id_exp, "check") and correct_ak_id_exp.check()
 
 def test_verification_of_data_integrity(memsynther):
     assert False
