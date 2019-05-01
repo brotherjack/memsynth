@@ -3,12 +3,21 @@
 Orlando DSA's membership list updating and maintaince solution.
 
 """
+from collections import namedtuple
 import re
 
 import pandas as pd
 
 from memsynth.config import EXPECTED_FORMAT_MEM_LIST
 import memsynth.exceptions as ex
+
+
+Parameter = namedtuple(
+    "Parameter",
+   ['name', 'checked', 'value'],
+)
+Parameter.__new__.__defaults__ = (None, None, None)
+Failure = namedtuple("Failure", ['line', 'msg'])
 
 
 class MemExpectation():
@@ -21,22 +30,31 @@ class MemExpectation():
     def  __init__(self, col, expectation):
         self.col = col
         self._acceptable_parameters = [
-            "data_type",
-            "regex",
-            "nullable"
+            Parameter(name="data_type", checked=True),
+            Parameter(name="regex", checked=True),
+            Parameter(name="nullable", checked=False)
         ]
+        self.fails = []
         self._form_expectation(expectation)
 
+    def _get_parameters(self, only_checked=False):
+        if only_checked:
+            return [x for x in self._acceptable_parameters]
+        else:
+            return [
+                x for x in self._acceptable_parameters if not only_checked
+            ]
+
     def _form_expectation(self, params):
-        for k,v in params.items():
-            if k not in self._acceptable_parameters:
+        for param in params:
+            if param.name not in [x.name for x in self._get_parameters()]:
                 raise ex.MemExpectationFormationError(
-                    self.col, f"{k} is not a recognized col. "
+                    self.col, f"{param.name} is not a recognized col. "
                     f"These are {self._acceptable_parameters}"
                 )
-            setattr(self, k, v)
-            if hasattr(self, "regex") and k.startswith("regex"):
-                self.regex = re.compile(v)
+            setattr(self, param.name, param)
+            if hasattr(self, "regex") and param.name.startswith("regex"):
+                self.regex = re.compile(param.value)
         if not hasattr(self, "data_type"):
             raise ex.MemExpectationFormationError(
                 self.col, "There is no data_type for column"
@@ -46,12 +64,29 @@ class MemExpectation():
     def _check_regex(self, data):
         return self.regex.match(data)
 
-    def check(self):
+    def check(self, col):
         """Checks to see if the condition of the expectation are met
 
+        :param col: (list of str) The data to check the expectation against
         :return: (boolean)
         """
-        raise NotImplementedError("This method is not ready yet")
+        self.fails = []
+        for param in self._get_parameters(only_checked=True):
+            try:
+                checkfn_str = "_check_" + param.name
+                if hasattr(self, checkfn_str):
+                    for i,cell in enumerate(col):
+                        assert getattr(self, checkfn_str)(cell)
+            except AssertionError:
+                self.fails.append(
+                    Failure(
+                        line=i, msg=f"Cell '{cell}' failed on '{param.name}'"
+                    )
+                )
+            except:
+                raise
+        return len(self.fails) == 0
+
 
 class MemSynther():
     """Core class of the MemSynth program.

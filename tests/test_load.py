@@ -5,16 +5,18 @@ import pytest
 
 from memsynth import config
 from memsynth import exceptions
-from memsynth.main import MemSynther, MemExpectation
+from memsynth.main import MemSynther, MemExpectation, Parameter
 
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 
-AK_ID_CORRECT = {
-    "data_type": "integer",
-    "regex": "[0-9]+",
-    "nullable": False
-}
+AK_ID_CORRECT = (
+    Parameter(name="data_type", value="integer"),
+    Parameter(name="regex", value="[0-9]+"),
+    Parameter(name="nullable", value=False),
+)
+
+AK_ID_CORRECT_DATA = ["127296", "5508", "94792"]
 
 @pytest.fixture
 def memsynther():
@@ -78,8 +80,8 @@ def test_expectation_encounters_an_incorrect_parameter():
     with pytest.raises(exceptions.MemExpectationFormationError) as ex:
         MemExpectation(
             "AK_ID", {
-                    "data_type": "integer",
-                    "bad_param": "not_good"
+                    Parameter(name="data_type", value="integer"),
+                    Parameter(name="bad_param", value="not_good")
                 }
         )
         assert "bad_param is not a recognized col." in str(ex.value)
@@ -91,7 +93,8 @@ def test_correct_regex_expectation_condition_passes(correct_ak_id_exp):
     assert correct_ak_id_exp._check_regex("12345")
 
 def test_correct_expectation_passes(correct_ak_id_exp):
-    assert hasattr(correct_ak_id_exp, "check") and correct_ak_id_exp.check()
+    assert hasattr(correct_ak_id_exp, "check") and \
+           correct_ak_id_exp.check(AK_ID_CORRECT_DATA)
 
 def test_verification_of_data_integrity(memsynther):
     assert False
