@@ -1,3 +1,4 @@
+from numpy import nan
 import pytest
 
 from memsynth import exceptions
@@ -62,3 +63,10 @@ def test_soft_expectation_partial_match(address_partial_exp):
 def test_soft_expectation_full_match(address_full_exp):
     address_full_exp.check(fixtures.ADDRESSES)
     assert len(address_full_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH
+
+@pytest.mark.usefixtures("address_full_exp")
+def test_soft_expectation_and_hard_at_same_time(address_full_exp):
+    NUMBER_OF_NULLS = 2
+    address_full_exp.check(fixtures.ADDRESSES + [nan]*NUMBER_OF_NULLS)
+    assert len(address_full_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH
+    assert len(address_full_exp.fails) == NUMBER_OF_NULLS
