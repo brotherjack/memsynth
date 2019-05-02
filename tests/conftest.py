@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import pytest
 
 from memsynth.main import MemSynther, MemExpectation, Parameter
@@ -13,6 +14,8 @@ AK_ID_CORRECT = (
 )
 
 AK_ID_CORRECT_DATA = ["127296", "5508", "94792"]
+AK_ID_INCORRECT_DATA = ["127296", "d%sq+`1", "5508", "94792", "De32"]
+DSA_ID_CORRECT_DATA = ["121227", np.nan, "117722", np.nan]
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 

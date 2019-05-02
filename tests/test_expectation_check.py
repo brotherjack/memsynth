@@ -29,6 +29,11 @@ def test_correct_expectation_passes(correct_ak_id_exp):
            correct_ak_id_exp.check(fixtures.AK_ID_CORRECT_DATA)
 
 @pytest.mark.usefixtures("correct_ak_id_exp")
+def test_incorrect_expectation_fails(correct_ak_id_exp):
+    assert hasattr(correct_ak_id_exp, "check")
+    assert correct_ak_id_exp.check(fixtures.AK_ID_INCORRECT_DATA) == False
+
+@pytest.mark.usefixtures("correct_ak_id_exp")
 def test_fails_nullable_expectation(correct_ak_id_exp):
     if hasattr(correct_ak_id_exp, "check"):
         correct_ak_id_exp.check(fixtures.AK_ID_CORRECT_DATA)
