@@ -45,6 +45,12 @@ class MemExpectation():
                 x for x in self._acceptable_parameters if not only_checked
             ]
 
+    def _get_parameter(self, name):
+        for param in self._get_parameters():
+            if param.name.startswith(name.lower()):
+                return param
+        return None
+
     def _form_expectation(self, params):
         for param in params:
             if param.name not in [x.name for x in self._get_parameters()]:
