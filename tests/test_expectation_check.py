@@ -53,12 +53,12 @@ def test_fails_nullable_expectation(correct_ak_id_exp):
     else:
         assert False, "correct_ak_id_exp does not have a check parameter"
 
-@pytest.mark.usefixtures("address_exp")
-def test_soft_expectation_partial_match(address_exp):
-    address_exp.check(fixtures.ADDRESSES)
-    assert len(address_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_PARTIAL_MATCH
+@pytest.mark.usefixtures("address_partial_exp")
+def test_soft_expectation_partial_match(address_partial_exp):
+    address_partial_exp.check(fixtures.ADDRESSES)
+    assert len(address_partial_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_PARTIAL_MATCH
 
-@pytest.mark.usefixtures("address_exp")
-def test_soft_expectation_full_match(address_exp):
-    address_exp.check(fixtures.ADDRESSES)
-    assert len(address_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH
+@pytest.mark.usefixtures("address_full_exp")
+def test_soft_expectation_full_match(address_full_exp):
+    address_full_exp.check(fixtures.ADDRESSES)
+    assert len(address_full_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH

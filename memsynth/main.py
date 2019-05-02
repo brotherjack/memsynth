@@ -72,6 +72,9 @@ class MemExpectation():
                 f = Failure(line=i, why=[Parameter(name='nullable')], data=data)
                 self.fails.append(f)
                 return None
+        if self.regex.args:
+            if 'match' in self.regex.args:
+                return self.regex.value.fullmatch(data) is not None
         return self.regex.value.match(data) is not None
 
     def check(self, col):
@@ -83,10 +86,11 @@ class MemExpectation():
         self.fails = []
         for param in self._get_parameters(only_checked=True):
             param = getattr(self, param.name)
-            try:
-                checkfn_str = "_check_" + param.name
-                if hasattr(self, checkfn_str):
-                    for i,cell in enumerate(col):
+            checkfn_str = "_check_" + param.name
+            if hasattr(self, checkfn_str):
+
+                for i,cell in enumerate(col):
+                    try:
                         check = getattr(self, checkfn_str)(cell, i)
                         # If None, then another thing failed in the
                         # check (eg. nullable)
@@ -94,14 +98,14 @@ class MemExpectation():
                             continue
                         else:
                             assert check
-            except AssertionError:
-                f = Failure(line=i, why=[param], data=cell)
-                if param.soft:
-                    self.soft_fails.append(f)
-                else:
-                    self.fails.append(f)
-            except:
-                raise
+                    except AssertionError:
+                        f = Failure(line=i, why=[param], data=cell)
+                        if param.soft:
+                            self.soft_fails.append(f)
+                        else:
+                            self.fails.append(f)
+                    except:
+                        raise
         return len(self.fails) == 0
 
 

@@ -16,11 +16,27 @@ AK_ID_CORRECT = (
 
 ADDRESS_PARAMS = (
     Parameter(name="data_type", value="string"),
-    Parameter(
-        name="regex", value=re.compile("\d+[ \t]+[sSnNwWEe]{0,1}[ \tA-Za-z]+"), soft=True
-    ),
     Parameter(name="nullable", value=False),
 )
+
+ADDRESS_PARAMS_FULL_MATCH = tuple(
+    list(ADDRESS_PARAMS) + [
+    Parameter(
+        name="regex",
+        value=re.compile("\d+[ \t]+[sSnNwWEe]{0,1}[ \tA-Za-z]+"),
+        soft=True,
+        args={'match': 'full'}
+    ),
+])
+
+ADDRESS_PARAMS_PARTIAL_MATCH = tuple(
+    list(ADDRESS_PARAMS) + [
+    Parameter(
+        name="regex",
+        value=re.compile("\d+[ \t]+[sSnNwWEe]{0,1}[ \tA-Za-z]+"),
+        soft=True,
+    ),
+])
 
 AK_ID_CORRECT_DATA = ["127296", "5508", "94792"]
 AK_ID_INCORRECT_DATA = ["127296", "d%sq+`1", "5508", "94792", "De32"]
@@ -49,5 +65,9 @@ def correct_ak_id_exp():
     return MemExpectation('AK_ID', AK_ID_CORRECT)
 
 @pytest.fixture
-def address_exp():
-    return MemExpectation('Address', ADDRESS_PARAMS)
+def address_partial_exp():
+    return MemExpectation('Address', ADDRESS_PARAMS_PARTIAL_MATCH)
+
+@pytest.fixture
+def address_full_exp():
+    return MemExpectation('Address', ADDRESS_PARAMS_FULL_MATCH)
