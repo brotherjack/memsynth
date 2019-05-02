@@ -14,9 +14,9 @@ import memsynth.exceptions as ex
 
 Parameter = namedtuple(
     "Parameter",
-   ['name', 'checked', 'value'],
+   ['name', 'checked', 'value', 'soft'],
 )
-Parameter.__new__.__defaults__ = (None, None, None)
+Parameter.__new__.__defaults__ = (None, None, None, False)
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
 
 
@@ -35,6 +35,7 @@ class MemExpectation():
             Parameter(name="nullable", checked=False)
         ]
         self.fails = []
+        self.soft_fails = []
         self._form_expectation(expectation)
 
     def _get_parameters(self, only_checked=False):
@@ -59,8 +60,6 @@ class MemExpectation():
                     f"These are {self._acceptable_parameters}"
                 )
             setattr(self, param.name, param)
-            if hasattr(self, "regex") and param.name.startswith("regex"):
-                self.regex = re.compile(param.value)
         if not hasattr(self, "data_type"):
             raise ex.MemExpectationFormationError(
                 self.col, "There is no data_type for column"
@@ -70,11 +69,10 @@ class MemExpectation():
     def _check_regex(self, data, i):
         if pd.isnull(data):
             if hasattr(self, 'nullable') and (self.nullable.value == False):
-                self.fails.append(
-                    Failure(line=i, why=[Parameter(name='nullable')], data=data)
-                )
+                f = Failure(line=i, why=[Parameter(name='nullable')], data=data)
+                self.fails.append(f)
                 return None
-        return self.regex.match(data) is not None
+        return self.regex.value.match(data) is not None
 
     def check(self, col):
         """Checks to see if the condition of the expectation are met
@@ -84,6 +82,7 @@ class MemExpectation():
         """
         self.fails = []
         for param in self._get_parameters(only_checked=True):
+            param = getattr(self, param.name)
             try:
                 checkfn_str = "_check_" + param.name
                 if hasattr(self, checkfn_str):
@@ -96,7 +95,11 @@ class MemExpectation():
                         else:
                             assert check
             except AssertionError:
-                self.fails.append(Failure(line=i, why=[param], data=cell))
+                f = Failure(line=i, why=[param], data=cell)
+                if param.soft:
+                    self.soft_fails.append(f)
+                else:
+                    self.fails.append(f)
             except:
                 raise
         return len(self.fails) == 0

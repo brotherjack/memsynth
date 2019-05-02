@@ -53,12 +53,7 @@ def test_fails_nullable_expectation(correct_ak_id_exp):
     else:
         assert False, "correct_ak_id_exp does not have a check parameter"
 
-@pytest.mark.usefixtures("memsynther")
-def test_verification_of_data_integrity(memsynther):
-    assert False
-
-def test_soft_expectation_fails():
-    assert False
-
-def test_soft_expectation_passes():
-    assert False
+@pytest.mark.usefixtures("address_exp")
+def test_soft_expectation(address_exp):
+    address_exp.check(fixtures.ADDRESSES)
+    assert len(address_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS
