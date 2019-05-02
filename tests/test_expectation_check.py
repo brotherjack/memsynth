@@ -2,7 +2,10 @@ import pytest
 
 from memsynth import exceptions
 from memsynth.main import MemExpectation, Parameter
-import tests.conftest as fixtures
+try:
+    import tests.conftest as fixtures
+except:
+    import conftest as fixtures
 
 
 def test_expectation_encounters_an_incorrect_parameter():
@@ -21,7 +24,7 @@ def test_correct_expectation_forms(correct_ak_id_exp):
 
 @pytest.mark.usefixtures("correct_ak_id_exp")
 def test_correct_regex_expectation_condition_passes(correct_ak_id_exp):
-    assert correct_ak_id_exp._check_regex("12345")
+    assert correct_ak_id_exp._check_regex("12345", 1)
 
 @pytest.mark.usefixtures("correct_ak_id_exp")
 def test_correct_expectation_passes(correct_ak_id_exp):
@@ -36,12 +39,14 @@ def test_incorrect_expectation_fails(correct_ak_id_exp):
 @pytest.mark.usefixtures("correct_ak_id_exp")
 def test_fails_nullable_expectation(correct_ak_id_exp):
     if hasattr(correct_ak_id_exp, "check"):
-        correct_ak_id_exp.check(fixtures.AK_ID_CORRECT_DATA)
+        # DSA ID has null values, which correct AK ID columns should not have
+        correct_ak_id_exp.check(fixtures.DSA_ID_CORRECT_DATA)
         if len(correct_ak_id_exp.fails) > 0:
             for fail in correct_ak_id_exp.fails:
-                if "nullable" in fail.msg:
+                if "nullable" in [whys.name for whys in fail.why]:
                     assert True
-            assert False, "There should be a nullable failure"
+                else:
+                    assert False, "There should be a nullable failure"
         else:
             assert False, "There are no failures"
 

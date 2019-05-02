@@ -17,7 +17,7 @@ Parameter = namedtuple(
    ['name', 'checked', 'value'],
 )
 Parameter.__new__.__defaults__ = (None, None, None)
-Failure = namedtuple("Failure", ['line', 'msg'])
+Failure = namedtuple("Failure", ['line', 'why', 'data'])
 
 
 class MemExpectation():
@@ -67,8 +67,14 @@ class MemExpectation():
             )
         self.is_an_expectation = True
 
-    def _check_regex(self, data):
-        return self.regex.match(data)
+    def _check_regex(self, data, i):
+        if pd.isnull(data):
+            if hasattr(self, 'nullable') and (self.nullable.value == False):
+                self.fails.append(
+                    Failure(line=i, why=[Parameter(name='nullable')], data=data)
+                )
+                return None
+        return self.regex.match(data) is not None
 
     def check(self, col):
         """Checks to see if the condition of the expectation are met
@@ -82,13 +88,15 @@ class MemExpectation():
                 checkfn_str = "_check_" + param.name
                 if hasattr(self, checkfn_str):
                     for i,cell in enumerate(col):
-                        assert getattr(self, checkfn_str)(cell)
+                        check = getattr(self, checkfn_str)(cell, i)
+                        # If None, then another thing failed in the
+                        # check (eg. nullable)
+                        if check is None:
+                            continue
+                        else:
+                            assert check
             except AssertionError:
-                self.fails.append(
-                    Failure(
-                        line=i, msg=f"Cell '{cell}' failed on '{param.name}'"
-                    )
-                )
+                self.fails.append(Failure(line=i, why=[param], data=cell))
             except:
                 raise
         return len(self.fails) == 0

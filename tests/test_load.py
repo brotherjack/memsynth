@@ -2,7 +2,10 @@ import pytest
 import pandas as pd
 
 from memsynth import exceptions
-import tests.conftest as fixtures
+try:
+    import tests.conftest as fixtures
+except:
+    import conftest as fixtures
 
 
 @pytest.mark.usefixtures("memsynther")
