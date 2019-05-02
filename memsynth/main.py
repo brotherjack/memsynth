@@ -14,9 +14,9 @@ import memsynth.exceptions as ex
 
 Parameter = namedtuple(
     "Parameter",
-   ['name', 'checked', 'value', 'soft'],
+   ['name', 'checked', 'value', 'soft', 'args'],
 )
-Parameter.__new__.__defaults__ = (None, None, None, False)
+Parameter.__new__.__defaults__ = (None, None, None, False, None)
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
 
 

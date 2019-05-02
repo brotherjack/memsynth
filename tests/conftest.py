@@ -33,7 +33,8 @@ ADDRESSES = [
     "87 Nope Ln #32",
     "P.O. Box 7621"
 ]
-ADDRESSES_SOFT_FAILS = 1
+ADDRESSES_SOFT_FAILS_PARTIAL_MATCH = 1
+ADDRESSES_SOFT_FAILS_FULL_MATCH = 3
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 
