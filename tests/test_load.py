@@ -1,33 +1,11 @@
-import os
-
-import pandas as pd
 import pytest
+import pandas as pd
 
-from memsynth import config
 from memsynth import exceptions
-from memsynth.main import MemSynther, MemExpectation, Parameter
+import tests.conftest as fixtures
 
-FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
-BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 
-AK_ID_CORRECT = (
-    Parameter(name="data_type", value="integer"),
-    Parameter(name="regex", value="[0-9]+"),
-    Parameter(name="nullable", value=False),
-)
-
-AK_ID_CORRECT_DATA = ["127296", "5508", "94792"]
-
-@pytest.fixture
-def memsynther():
-    memsynth = MemSynther()
-    memsynth.load_from_excel(FAKE_MEM_LIST)
-    return memsynth
-
-@pytest.fixture
-def correct_ak_id_exp():
-    return MemExpectation('AK_ID', AK_ID_CORRECT)
-
+@pytest.mark.usefixtures("memsynther")
 def test_load_bad_excel_file(memsynther):
     """Make sure that program can identify when the file is completely wrong
 
@@ -35,7 +13,7 @@ def test_load_bad_excel_file(memsynther):
     nothing matching the expected columns
     """
     with pytest.raises(exceptions.LoadMembershipListException) as ex:
-        memsynther.load_from_excel(BAD_MEM_LIST)
+        memsynther.load_from_excel(fixtures.BAD_MEM_LIST)
         assert "None of the columns match." in str(ex.value)
 
 def test_load_excel_file():
@@ -43,10 +21,10 @@ def test_load_excel_file():
 
     This test requires the "fakeodsa.xlsx" file with an `AK_ID` column
     """
-    df = pd.read_excel(FAKE_MEM_LIST)
+    df = pd.read_excel(fixtures.FAKE_MEM_LIST)
     assert "AK_ID" in df.columns
 
-
+@pytest.mark.usefixtures("memsynther")
 def test_incorrect_column_headers(memsynther):
     """Makes sure that MemSynther notices when the column headers are wrong"""
     with pytest.raises(exceptions.LoadMembershipListException) as ex:
@@ -61,6 +39,7 @@ def test_incorrect_column_headers(memsynther):
         ("DERP", "add"),
     ]
 )
+@pytest.mark.usefixtures("memsynther")
 def test_wrong_number_of_cols(memsynther, col, add_or_del):
     with pytest.raises(exceptions.LoadMembershipListException) as ex:
         if add_or_del.startswith('add'):
@@ -75,26 +54,3 @@ def test_wrong_number_of_cols(memsynther, col, add_or_del):
             assert "added new columns" in str(ex.value)
         else:
             assert "appears to be missing" in str(ex.value)
-
-def test_expectation_encounters_an_incorrect_parameter():
-    with pytest.raises(exceptions.MemExpectationFormationError) as ex:
-        MemExpectation(
-            "AK_ID", {
-                    Parameter(name="data_type", value="integer"),
-                    Parameter(name="bad_param", value="not_good")
-                }
-        )
-        assert "bad_param is not a recognized col." in str(ex.value)
-
-def test_correct_expectation_forms(correct_ak_id_exp):
-    assert correct_ak_id_exp.is_an_expectation
-
-def test_correct_regex_expectation_condition_passes(correct_ak_id_exp):
-    assert correct_ak_id_exp._check_regex("12345")
-
-def test_correct_expectation_passes(correct_ak_id_exp):
-    assert hasattr(correct_ak_id_exp, "check") and \
-           correct_ak_id_exp.check(AK_ID_CORRECT_DATA)
-
-def test_verification_of_data_integrity(memsynther):
-    assert False
