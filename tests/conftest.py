@@ -54,6 +54,7 @@ ADDRESSES_SOFT_FAILS_PARTIAL_MATCH = 1
 ADDRESSES_SOFT_FAILS_FULL_MATCH = 3
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
+PARAM_JSON_FILE = os.path.join(config.TEST_DIR, "params.json")
 
 @pytest.fixture
 def memsynther():

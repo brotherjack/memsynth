@@ -57,3 +57,11 @@ def test_wrong_number_of_cols(memsynther, col, add_or_del):
             assert "added new columns" in str(ex.value)
         else:
             assert "appears to be missing" in str(ex.value)
+
+@pytest.mark.usefixtures("memsynther")
+def test_load_expectation_json_file_successful(memsynther):
+    assert False
+
+@pytest.mark.usefixtures("memsynther")
+def test_load_expectation_json_file_with_bad_parameters(memsynther):
+    assert False
