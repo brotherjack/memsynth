@@ -3,20 +3,15 @@
 Orlando DSA's membership list updating and maintaince solution.
 
 """
-from collections import namedtuple
-import re
+from collections import namedtuple, defaultdict
 
 import pandas as pd
 
 from memsynth.config import EXPECTED_FORMAT_MEM_LIST
 import memsynth.exceptions as ex
+from memsynth.parameters import Parameter
 
 
-Parameter = namedtuple(
-    "Parameter",
-   ['name', 'checked', 'value', 'soft', 'args'],
-)
-Parameter.__new__.__defaults__ = (None, None, None, False, None)
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
 
 
@@ -24,43 +19,43 @@ class MemExpectation():
     """An expectation that a column of data is expected to conform to
 
     :param col: (str) Name of the column the expectation refers to
-    :param expectation: (dict) The various parameters of the expectation
-        and an expectation of what the data is to conform to
+    :param expectation: (iterable of `Parameter`) The various parameters of the expectation
+        which reflect an expectation of what the data is to conform to
     """
     def  __init__(self, col, expectation):
         self.col = col
-        self._acceptable_parameters = [
-            Parameter(name="data_type", checked=True),
-            Parameter(name="regex", checked=True),
-            Parameter(name="nullable", checked=False)
-        ]
+        self._acceptable_parameters = dict(
+            data_type=dict(checked=True, unique=True, required=True),
+            regex=dict(checked=True, unique=False, required=False),
+            nullable=dict(checked=False, unique=True, required=False)
+        )
+        self.parameters = set()
         self.fails = []
         self.soft_fails = []
         self._form_expectation(expectation)
 
-    def _get_parameters(self, only_checked=False):
-        if only_checked:
-            return [x for x in self._acceptable_parameters]
-        else:
-            return [
-                x for x in self._acceptable_parameters if not only_checked
-            ]
-
-    def _get_parameter(self, name):
-        for param in self._get_parameters():
-            if param.name.startswith(name.lower()):
-                return param
-        return None
-
     def _form_expectation(self, params):
         for param in params:
-            if param.name not in [x.name for x in self._get_parameters()]:
+            if param.name not in self._acceptable_parameters:
                 raise ex.MemExpectationFormationError(
                     self.col, f"{param.name} is not a recognized col. "
-                    f"These are {self._acceptable_parameters}"
+                    f"These are {self._acceptable_parameters.keys()}"
                 )
-            setattr(self, param.name, param)
-        if not hasattr(self, "data_type"):
+            self.parameters.add(param.name)
+            if hasattr(self, param.name):
+                if self._acceptable_parameters[param.name].get('unique'):
+                    raise ex.MemExpectationFormationError(
+                        self.col,
+                        f"has multiple '{param.name}' unique parameters"
+                    )
+                else:
+                    getattr(self, param.name).append(param)
+            else:
+                if self._acceptable_parameters[param.name].get('unique'):
+                    setattr(self, param.name, param)
+                else:
+                    setattr(self, param.name, [param])
+        if not self.parameters:
             raise ex.MemExpectationFormationError(
                 self.col, "There is no data_type for column"
             )
@@ -71,11 +66,13 @@ class MemExpectation():
             if hasattr(self, 'nullable') and (self.nullable.value == False):
                 f = Failure(line=i, why=[Parameter(name='nullable')], data=data)
                 self.fails.append(f)
-                return None
-        if self.regex.args:
-            if 'match' in self.regex.args:
-                return self.regex.value.fullmatch(data) is not None
-        return self.regex.value.match(data) is not None
+                yield None, getattr(self, 'nullable')
+        else:
+            for regex in getattr(self, 'regex'):
+                if regex.args and 'match' in regex.args:
+                    yield regex.value.fullmatch(data) is not None, regex
+                else:
+                    yield regex.value.match(data) is not None, regex
 
     def check(self, col):
         """Checks to see if the condition of the expectation are met
@@ -84,28 +81,29 @@ class MemExpectation():
         :return: (boolean)
         """
         self.fails = []
-        for param in self._get_parameters(only_checked=True):
-            param = getattr(self, param.name)
-            checkfn_str = "_check_" + param.name
+        chkdparams = [
+            k for k,v in self._acceptable_parameters.items() if v.get('checked')
+        ]
+        for param_name in chkdparams:
+            checkfn_str = "_check_" + param_name
             if hasattr(self, checkfn_str):
-
                 for i,cell in enumerate(col):
-                    try:
-                        check = getattr(self, checkfn_str)(cell, i)
-                        # If None, then another thing failed in the
-                        # check (eg. nullable)
-                        if check is None:
-                            continue
-                        else:
-                            assert check
-                    except AssertionError:
-                        f = Failure(line=i, why=[param], data=cell)
-                        if param.soft:
-                            self.soft_fails.append(f)
-                        else:
-                            self.fails.append(f)
-                    except:
-                        raise
+                    for check, param in getattr(self, checkfn_str)(cell, i):
+                        try:
+                            # If None, then another thing failed in the
+                            # check (eg. nullable)
+                            if check is None:
+                                continue
+                            else:
+                                assert check
+                        except AssertionError:
+                            f = Failure(line=i, why=[param], data=cell)
+                            if param.soft:
+                                self.soft_fails.append(f)
+                            else:
+                                self.fails.append(f)
+                        except:
+                            raise
         return len(self.fails) == 0
 
 

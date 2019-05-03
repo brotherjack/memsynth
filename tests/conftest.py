@@ -4,7 +4,8 @@ import re
 import numpy as np
 import pytest
 
-from memsynth.main import MemSynther, MemExpectation, Parameter
+from memsynth.main import MemSynther, MemExpectation
+from memsynth.parameters import Parameter
 from memsynth import config
 
 
