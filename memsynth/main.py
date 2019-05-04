@@ -3,13 +3,14 @@
 Orlando DSA's membership list updating and maintaince solution.
 
 """
-from collections import namedtuple, defaultdict
+from collections import namedtuple
+import json
 
 import pandas as pd
 
-from memsynth.config import EXPECTED_FORMAT_MEM_LIST
+from memsynth.config import EXPECTED_FORMAT_MEM_LIST, uss_regex
 import memsynth.exceptions as ex
-from memsynth.parameters import Parameter
+from memsynth.parameters import Parameter, ACCEPTABLE_PARAMS
 
 
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
@@ -68,11 +69,18 @@ class MemExpectation():
                 self.fails.append(f)
                 yield None, getattr(self, 'nullable')
         else:
-            for regex in getattr(self, 'regex'):
-                if regex.args and 'match' in regex.args:
-                    yield regex.value.fullmatch(data) is not None, regex
+            for rx in getattr(self, 'regex'):
+                flags = 0 if not 'args' in rx else rx.args.get('flags', 0)
+                if rx.args and 'match' in rx.args:
+                    if rx.args['match'].lower() == "full":
+                        yield rx.value.fullmatch(data, flags) is not None, rx
+                    elif rx.args['match'].lower() == 'us_states':
+                        # re flag for IGNORECASE == 2
+                        yield uss_regex.fullmatch(data, 2) is not None, rx
+                    else:
+                        yield rx.value.match(data, flags) is not None, rx
                 else:
-                    yield regex.value.match(data) is not None, regex
+                    yield rx.value.match(data, flags) is not None, rx
 
     def check(self, col):
         """Checks to see if the condition of the expectation are met
@@ -115,6 +123,30 @@ class MemSynther():
     """
     def __init__(self):
         self.df = None
+        self.expectations = {}
+        self._acceptable_columns = EXPECTED_FORMAT_MEM_LIST.get("columns")
+
+    def load_expectations_from_json(self, fname):
+        """Loads expectations from a JSON file
+
+        :param fname: JSON file containing expectations
+        :raises: `MemExpectationFormationError` if the JSON file is
+            misconfigured
+        :raises: `FileNotFoundError` if file is not found
+        :return: None
+        """
+        with open(fname, 'r') as f:
+            self.expectations = json.load(f)
+            #found_cols = self._acceptable_columns.copy()
+            for col, exps in self.expectations.items():
+                if col not in self._acceptable_columns:
+                    raise ex.MemExpectationFormationError(
+                        col, "is not a valid column."
+                    )
+                else:
+                    self.expectations[col] = [Parameter(**exp) for exp in exps]
+            #       found_cols.remove(col)
+            # TODO: Might want to add a warning if a column has no expectations
 
     def _verify_memlist_format(self, fname=None):
         """Checks the format of the membership list

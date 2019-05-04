@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 
-from memsynth import exceptions
+from memsynth import exceptions, config
 try:
     import tests.conftest as fixtures
 except:
@@ -60,8 +60,6 @@ def test_wrong_number_of_cols(memsynther, col, add_or_del):
 
 @pytest.mark.usefixtures("memsynther")
 def test_load_expectation_json_file_successful(memsynther):
-    assert False
-
-@pytest.mark.usefixtures("memsynther")
-def test_load_expectation_json_file_with_bad_parameters(memsynther):
-    assert False
+    expected_cols = config.EXPECTED_FORMAT_MEM_LIST.get("columns")
+    memsynther.load_expectations_from_json(fixtures.PARAM_JSON_FILE)
+    assert len(memsynther.expectations.keys()) == len(expected_cols)

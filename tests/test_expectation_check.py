@@ -2,7 +2,8 @@ from numpy import nan
 import pytest
 
 from memsynth import exceptions
-from memsynth.main import MemExpectation, Parameter
+from memsynth.main import MemSynther, MemExpectation, Parameter
+
 try:
     import tests.conftest as fixtures
 except:
@@ -70,3 +71,7 @@ def test_soft_expectation_and_hard_at_same_time(address_full_exp):
     address_full_exp.check(fixtures.ADDRESSES + [nan]*NUMBER_OF_NULLS)
     assert len(address_full_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH
     assert len(address_full_exp.fails) == NUMBER_OF_NULLS
+
+@pytest.mark.usefixtures("memsynther")
+def test_verify_memlist_data_integrity(memsynther):
+    assert False
