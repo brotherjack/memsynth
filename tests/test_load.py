@@ -34,29 +34,37 @@ def test_incorrect_column_headers(memsynther):
         # Fuck up the data, then explicitly call the verification function
         memsynther.df.rename({"AK_ID": "NARBAR"}, axis=1, inplace=True)
         memsynther._verify_memlist_format()
+        assert "missing the following columns 'AK_ID'" in str(ex.value)
 
 
 @pytest.mark.parametrize(
     'col, add_or_del', [
         ("AK_ID", "del"),
         ("DERP", "add"),
+        (("AK_ID", "DERP"), 'add_and_del')
     ]
 )
 @pytest.mark.usefixtures("memsynther")
 def test_wrong_number_of_cols(memsynther, col, add_or_del):
     with pytest.raises(exceptions.LoadMembershipListException) as ex:
-        if add_or_del.startswith('add'):
+        if add_or_del == 'add':
             memsynther.df[col] = [[]] * len(memsynther.df)
-        else:
+        elif add_or_del == 'del':
             memsynther.df.drop(col, 1, inplace=True)
+        else:
+            memsynther.df[col[1]] = [[]] * len(memsynther.df)
+            memsynther.df.drop(col[0], 1, inplace=True)
 
         memsynther._verify_memlist_format()
 
         # Check error messages to make sure they are correct
-        if add_or_del.startswith('add'):
+        if add_or_del == 'add':
             assert "added new columns" in str(ex.value)
-        else:
+        elif add_or_del == 'del':
             assert "appears to be missing" in str(ex.value)
+        else:
+            assert "added new columns" in str(ex.value) and \
+                "appears to be missing" in str(ex.value)
 
 @pytest.mark.usefixtures("memsynther")
 def test_load_expectation_json_file_successful(memsynther):

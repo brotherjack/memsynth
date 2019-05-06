@@ -174,7 +174,7 @@ class MemSynther():
         expected_cols = set(EXPECTED_FORMAT_MEM_LIST.get("columns"))
         actual_cols = set(df.columns)
         if expected_cols != actual_cols:
-            if actual_cols.intersection(expected_cols):
+            if expected_cols.intersection(actual_cols) == expected_cols:
                 raise ex.LoadMembershipListException(
                     "None of the columns match. Are you sure this is a "
                     "membership file?"
