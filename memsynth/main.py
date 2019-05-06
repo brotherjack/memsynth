@@ -190,12 +190,15 @@ class MemSynther():
                     f"following columns '{expected_cols.difference(actual_cols)}'"
                 )
             elif actual_cols.issuperset(expected_cols):
-                raise ex.LoadMembershipListException(
-                    self,
-                    msg=f"The membership list appears to have added new columns "
-                    f"that need to be added. These columns are the following "
-                    f"{actual_cols.difference(expected_cols)}"
-                )
+                if not softload:
+                    raise ex.LoadMembershipListException(
+                        self,
+                        msg=f"The membership list appears to have added new "
+                        f"columns that need to be added. These columns are the"
+                        f" following {actual_cols.difference(expected_cols)}"
+                    )
+                else:
+                    return df
             else:
                 raise ex.LoadMembershipListException(
                     self,

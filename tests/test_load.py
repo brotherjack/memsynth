@@ -75,5 +75,5 @@ def test_load_expectation_json_file_successful(memsynther):
 @pytest.mark.usefixtures("memsynther")
 def test_softload_verify_memlist_format(memsynther):
     memsynther.df['extraneousCol'] = [[]] * len(memsynther.df)
-    df = memsynther._verify_memlist_format()
+    df = memsynther._verify_memlist_format(softload=True)
     assert hasattr(df, 'columns')
