@@ -148,14 +148,17 @@ class MemSynther():
             #       found_cols.remove(col)
             # TODO: Might want to add a warning if a column has no expectations
 
-    def _verify_memlist_format(self, fname=None):
+    def _verify_memlist_format(self, fname=None, softload=False):
         """Checks the format of the membership list
 
         Checks format of columns and other elements of the membership list
         sent to us from National DSA
 
-        :param fname: File name of the excel file with membership data,
-            if None the `MemSynther` attempts to read from `df` parameter
+        :param fname: (str, default None) File name of the excel file with
+            membership data, if None the `MemSynther` attempts to read from
+            `df` parameter
+        :param softload: (boolean, default False) If true, then
+            `LoadMembershipListException` is not raised on extra columns
         :return `pandas.DataFrame`: Returns the membership list, if verified
         :raises `LoadMembershipListException`: If the format does not match
             the one listed in `EXPECTED_FORMAT_MEM_LIST` the config file or
@@ -174,25 +177,29 @@ class MemSynther():
         expected_cols = set(EXPECTED_FORMAT_MEM_LIST.get("columns"))
         actual_cols = set(df.columns)
         if expected_cols != actual_cols:
-            if expected_cols.intersection(actual_cols) == expected_cols:
+            if expected_cols.difference(actual_cols) == expected_cols:
                 raise ex.LoadMembershipListException(
-                    "None of the columns match. Are you sure this is a "
+                    self,
+                    msg="None of the columns match. Are you sure this is a "
                     "membership file?"
                 )
             elif expected_cols.issuperset(actual_cols):
                 raise ex.LoadMembershipListException(
-                    f"The membership list appears to be missing the "
+                    self,
+                    msg=f"The membership list appears to be missing the "
                     f"following columns '{expected_cols.difference(actual_cols)}'"
                 )
             elif actual_cols.issuperset(expected_cols):
                 raise ex.LoadMembershipListException(
-                    f"The membership list appears to have added new columns "
+                    self,
+                    msg=f"The membership list appears to have added new columns "
                     f"that need to be added. These columns are the following "
                     f"{actual_cols.difference(expected_cols)}"
                 )
             else:
                 raise ex.LoadMembershipListException(
-                    f"The membership list appears to be missing the "
+                    self,
+                    msg=f"The membership list appears to be missing the "
                     f"following columns '{expected_cols.difference(actual_cols)}'"
                     f" and the membership list appears to have added new columns "
                     f"that need to be added. These columns are the following "
