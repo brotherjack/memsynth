@@ -8,7 +8,7 @@ import json
 
 import pandas as pd
 
-from memsynth.config import EXPECTED_FORMAT_MEM_LIST, uss_regex
+from memsynth.config import uss_regex
 import memsynth.exceptions as ex
 from memsynth.parameters import Parameter, ACCEPTABLE_PARAMS
 
@@ -124,7 +124,6 @@ class MemSynther():
     def __init__(self):
         self.df = None
         self.expectations = {}
-        self._acceptable_columns = EXPECTED_FORMAT_MEM_LIST.get("columns")
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
@@ -137,9 +136,10 @@ class MemSynther():
         """
         with open(fname, 'r') as f:
             self.expectations = json.load(f)
+            acceptable_columns = self.expectations.keys()
             #found_cols = self._acceptable_columns.copy()
             for col, exps in self.expectations.items():
-                if col not in self._acceptable_columns:
+                if col not in acceptable_columns:
                     raise ex.MemExpectationFormationError(
                         col, "is not a valid column."
                     )
@@ -174,7 +174,7 @@ class MemSynther():
                 f"No filename passed to MemSynther and no dataframe loaded "
                 f"from memory."
             )
-        expected_cols = set(EXPECTED_FORMAT_MEM_LIST.get("columns"))
+        expected_cols = set(self.expectations.keys())
         actual_cols = set(df.columns)
         if expected_cols != actual_cols:
             if expected_cols.difference(actual_cols) == expected_cols:

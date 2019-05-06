@@ -59,6 +59,7 @@ PARAM_JSON_FILE = os.path.join(config.TEST_DIR, "params.json")
 @pytest.fixture
 def memsynther():
     memsynth = MemSynther()
+    memsynth.load_expectations_from_json(PARAM_JSON_FILE)
     memsynth.load_from_excel(FAKE_MEM_LIST)
     return memsynth
 

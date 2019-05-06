@@ -8,4 +8,10 @@ Parameter = namedtuple(
 )
 Parameter.__new__.__defaults__ = (None, None, False, None)
 
-ACCEPTABLE_PARAMS = ["data_type", "regex", "nullable", "relative_to"]
+ACCEPTABLE_PARAMS = [
+    "data_type",
+    "regex",
+    "nullable",
+    "relative_to",
+    "required"
+]

@@ -77,3 +77,9 @@ def test_softload_verify_memlist_format(memsynther):
     memsynther.df['extraneousCol'] = [[]] * len(memsynther.df)
     df = memsynther._verify_memlist_format(softload=True)
     assert hasattr(df, 'columns')
+
+@pytest.mark.usefixtures("memsynther")
+def test_non_required_parameters_dont_raise_errors(memsynther):
+    memsynther.df.drop("State", 1, inplace=True)
+    df = memsynther._verify_memlist_format()
+    assert hasattr(df, 'columns')

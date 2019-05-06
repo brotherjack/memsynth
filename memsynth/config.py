@@ -4,6 +4,7 @@ import re
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(ROOT_DIR, 'tests')
 
+# TODO: Delete?
 EXPECTED_FORMAT_MEM_LIST = {
     "columns": [
         "AK_ID",

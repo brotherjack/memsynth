@@ -38,6 +38,12 @@
       "value": true,
       "soft": false,
       "args": null
+    },
+    {
+      "name": "required",
+      "value": false,
+      "soft": false,
+      "args": null
     }
   ],
   "first_name": [
@@ -546,6 +552,12 @@
       "value": false,
       "soft": false,
       "args": null
+    },
+    {
+      "name": "required",
+      "value": false,
+      "soft": false,
+      "args": null
     }
   ],
   "Country": [
@@ -563,6 +575,12 @@
     },
     {
       "name": "nullable",
+      "value": false,
+      "soft": false,
+      "args": null
+    },
+    {
+      "name": "required",
       "value": false,
       "soft": false,
       "args": null
