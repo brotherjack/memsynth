@@ -26,9 +26,9 @@ class MemExpectation():
     def  __init__(self, col, expectation):
         self.col = col
         self._acceptable_parameters = dict(
-            data_type=dict(checked=True, unique=True, required=True),
-            regex=dict(checked=True, unique=False, required=False),
-            nullable=dict(checked=False, unique=True, required=False)
+            data_type=dict(unique=True, required=True),
+            regex=dict(unique=False, required=False),
+            nullable=dict(unique=True, required=False)
         )
         self.parameters = set()
         self.fails = []
@@ -90,7 +90,7 @@ class MemExpectation():
         """
         self.fails = []
         chkdparams = [
-            k for k,v in self._acceptable_parameters.items() if v.get('checked')
+            k for k,v in self._acceptable_parameters.items()
         ]
         for param_name in chkdparams:
             checkfn_str = "_check_" + param_name
