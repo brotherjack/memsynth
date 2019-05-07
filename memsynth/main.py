@@ -212,7 +212,7 @@ class MemSynther():
         else:
             return df
 
-    def verify_memlist_data_integrity(self, config, verify_format=False):
+    def verify_memlist_data_integrity(self, verify_format=False):
         """Checks the data of a loaded membership list to verify integrity
 
         Checks the data in the membership dataframe against the configuration

@@ -75,6 +75,18 @@ def test_soft_expectation_and_hard_at_same_time(address_full_exp):
     assert len(address_full_exp.soft_fails) == fixtures.ADDRESSES_SOFT_FAILS_FULL_MATCH
     assert len(address_full_exp.fails) == NUMBER_OF_NULLS
 
+def test_regex_parameter_compilation():
+    exp = MemExpectation(
+        "AK_ID", dict(
+            parameters=[
+                dict(name="data_type", value="integer"),
+                dict(name="regex", value="[0-9]+"),
+                dict(name="nullable", value=False)
+            ],
+            required=True)
+    )
+    assert exp.value.match("3")
+
 @pytest.mark.usefixtures("memsynther")
 def test_verify_memlist_data_integrity(memsynther):
     assert False
