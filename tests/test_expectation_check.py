@@ -77,7 +77,7 @@ def test_soft_expectation_and_hard_at_same_time(address_full_exp):
 
 def test_regex_parameter_compilation():
     exp = MemExpectation(
-        "AK_ID", dict(
+        "AK_ID", **dict(
             parameters=[
                 dict(name="data_type", value="integer"),
                 dict(name="regex", value="[0-9]+"),
@@ -85,7 +85,7 @@ def test_regex_parameter_compilation():
             ],
             required=True)
     )
-    assert exp.value.match("3")
+    assert exp.check(["3"])
 
 @pytest.mark.usefixtures("memsynther")
 def test_verify_memlist_data_integrity(memsynther):

@@ -5,6 +5,7 @@ Orlando DSA's membership list updating and maintaince solution.
 """
 from collections import namedtuple
 import json
+import re
 
 import pandas as pd
 
@@ -40,6 +41,8 @@ class MemExpectation():
                     f"These are {ACCEPTABLE_PARAMS}"
                 )
             self.parameters.add(param_name)
+            if param_name == 'regex':
+                param['value'] = re.compile(param['value'])
             if hasattr(self, param_name):
                 if param.get('unique'):
                     raise ex.MemExpectationFormationError(
