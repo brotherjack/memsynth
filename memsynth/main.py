@@ -185,15 +185,9 @@ class MemSynther():
                 raise ex.LoadMembershipListException(
                     self,
                     msg="None of the columns match. Are you sure this is a "
-                    "membership file?"
+                        "membership file?"
                 )
-            elif expected_cols.issuperset(actual_cols):
-                raise ex.LoadMembershipListException(
-                    self,
-                    msg=f"The membership list appears to be missing the "
-                    f"following columns '{expected_cols.difference(actual_cols)}'"
-                )
-            elif actual_cols.issuperset(expected_cols):
+            elif expected_cols.intersection(actual_cols) == expected_cols:
                 if not softload:
                     raise ex.LoadMembershipListException(
                         self,
@@ -204,14 +198,21 @@ class MemSynther():
                 else:
                     return df
             else:
-                raise ex.LoadMembershipListException(
-                    self,
-                    msg=f"The membership list appears to be missing the "
-                    f"following columns '{expected_cols.difference(actual_cols)}'"
-                    f" and the membership list appears to have added new columns "
-                    f"that need to be added. These columns are the following "
-                    f"{actual_cols.difference(expected_cols)}"
-                )
+                if actual_cols.difference(expected_cols) == set():
+                    raise ex.LoadMembershipListException(
+                        self,
+                        msg=f"The membership list appears to be missing the "
+                        f"following columns '{expected_cols.difference(actual_cols)}'"
+                    )
+                else:
+                    raise ex.LoadMembershipListException(
+                        self,
+                        msg=f"The membership list appears to be missing the "
+                        f"following columns '{expected_cols.difference(actual_cols)}'"
+                        f" and the membership list appears to have added new columns "
+                        f"that need to be added. These columns are the following "
+                        f"{actual_cols.difference(expected_cols)}"
+                    )
         else:
             return df
 

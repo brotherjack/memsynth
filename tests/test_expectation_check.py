@@ -21,7 +21,7 @@ def test_expectation_encounters_an_incorrect_parameter():
                     "required": True
                 }
         )
-        assert "bad_param is not a recognized col." in str(ex.value)
+    assert "bad_param is not a recognized col." in str(ex.value)
 
 @pytest.mark.usefixtures("correct_ak_id_exp")
 def test_correct_expectation_forms(correct_ak_id_exp):

@@ -34,7 +34,7 @@ def test_incorrect_column_headers(memsynther):
         # Fuck up the data, then explicitly call the verification function
         memsynther.df.rename({"AK_ID": "NARBAR"}, axis=1, inplace=True)
         memsynther._verify_memlist_format()
-        assert "missing the following columns 'AK_ID'" in str(ex.value)
+    assert "missing the following columns '{'AK_ID'}'" in str(ex.value)
 
 
 @pytest.mark.parametrize(
