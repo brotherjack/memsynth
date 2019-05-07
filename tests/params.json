@@ -1,589 +1,648 @@
 {
-  "AK_ID": [
-    {
-      "name": "data_type",
-      "value": "integer",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[0-9]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-
-  "DSA_ID": [
-    {
-      "name": "data_type",
-      "value": "integer",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[0-9]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "required",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "first_name": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z\\-\\.\\& ]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z]+$",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "middle_name": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z\\-\\.\\& ]+",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z]+$|^[A-Z]\\.$",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "last_name": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z\\-\\.\\& ]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z\\-]+$",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "suffix": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z0-9\\.\\, ]+",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Family_first_name": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z\\-\\.\\& ]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\(& )*[A-Za-z]+$",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Family_last_name": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z\\-\\.\\& ]+",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z\\-]+$",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Organization": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "[A-Za-z0-9\\-\\.\\&\\, ]+",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Address_Line_1": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\d+[A-Za-z0-9\\-\\.]+$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Address_Line_2": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z0-9\\-\\.\\#]+$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^((unit |apt )*[a-z0-9]+|\\#*[0-9]+)$",
-      "soft": true,
-      "args": {
-        "flags": [2]
-      }
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "City": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^[A-Za-z\\-\\. ]$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Zip": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\d{5}\\-\\d{4}$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Mobile_Phone": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Home_Phone": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Work_Phone": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Email": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Mail_preference": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "(Yes|No|Membership card only)",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Do_Not_Call": [
-    {
-      "name": "data_type",
-      "value": "boolean",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "(0|1)",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Join_Date": [
-    {
-      "name": "data_type",
-      "value": "date",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "\\d{4}\\-\\d{2}\\-\\d{2}",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-    "Xdate": [
-    {
-      "name": "data_type",
-      "value": "date",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "\\d{4}\\-\\d{2}\\-\\d{2}",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "relative_to",
-      "value": {
-        "Join_Date": "less_than"
+  "AK_ID": {
+    "parameters": [
+        {
+          "name": "data_type",
+          "value": "integer",
+          "soft": false,
+          "args": null
+        },
+        {
+          "name": "regex",
+          "value": "[0-9]+",
+          "soft": false,
+          "args": null
+        },
+        {
+          "name": "nullable",
+          "value": false,
+          "soft": false,
+          "args": null
+        }
+      ],
+      "required": true
+  },
+  "DSA_ID": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "integer",
+        "soft": false,
+        "args": null
       },
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Memb_status": [
-    {
-      "name": "data_type",
-      "value": "boolean",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "M*",
-      "soft": true,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": true,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "membership_type": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "annual|monthly",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "monthly_status": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "2mo_plus_failed|active|canceled_by_admin|never",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "State": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "",
-      "soft": false,
-      "args": {
-        "match": "us_states"
+      {
+        "name": "regex",
+        "value": "[0-9]+",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
       }
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "required",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ],
-  "Country": [
-    {
-      "name": "data_type",
-      "value": "string",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "regex",
-      "value": "United States",
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "nullable",
-      "value": false,
-      "soft": false,
-      "args": null
-    },
-    {
-      "name": "required",
-      "value": false,
-      "soft": false,
-      "args": null
-    }
-  ]
+    ],
+    "required": false
+  },
+  "first_name": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z\\-\\.\\& ]+",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z]+$",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "middle_name": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z\\-\\.\\& ]+",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z]+$|^[A-Z]\\.$",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": false
+  },
+  "last_name": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z\\-\\.\\& ]+",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z\\-]+$",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "suffix": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z0-9\\.\\, ]+",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": false
+  },
+  "Family_first_name": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z\\-\\.\\& ]+",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\(& )*[A-Za-z]+$",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Family_last_name": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z\\-\\.\\& ]+",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z\\-]+$",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Organization": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "[A-Za-z0-9\\-\\.\\&\\, ]+",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": false
+  },
+  "Address_Line_1": {
+    "parameters":[
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\d+[A-Za-z0-9\\-\\.]+$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Address_Line_2": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z0-9\\-\\.\\#]+$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^((unit |apt )*[a-z0-9]+|\\#*[0-9]+)$",
+        "soft": true,
+        "args": {
+          "flags": [2]
+        }
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "City": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^[A-Za-z\\-\\. ]$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Zip": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\d{5}\\-\\d{4}$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Mobile_Phone": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Home_Phone": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Work_Phone": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "^\\d{3}\\-\\d{3}\\-\\d{4}$",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Email": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$)",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Mail_preference": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "(Yes|No|Membership card only)",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Do_Not_Call": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "boolean",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "(0|1)",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Join_Date": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "date",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "\\d{4}\\-\\d{2}\\-\\d{2}",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Xdate": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "date",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "\\d{4}\\-\\d{2}\\-\\d{2}",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "relative_to",
+        "value": {
+          "Join_Date": "less_than"
+        },
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "Memb_status": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "boolean",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "M*",
+        "soft": true,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": true,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "membership_type": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "annual|monthly",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "monthly_status": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "2mo_plus_failed|active|canceled_by_admin|never",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": true
+  },
+  "State": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "",
+        "soft": false,
+        "args": {
+          "match": "us_states"
+        }
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": false
+  },
+  "Country": {
+    "parameters": [
+      {
+        "name": "data_type",
+        "value": "string",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "regex",
+        "value": "United States",
+        "soft": false,
+        "args": null
+      },
+      {
+        "name": "nullable",
+        "value": false,
+        "soft": false,
+        "args": null
+      }
+    ],
+    "required": false
+  }
 }

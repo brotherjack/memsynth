@@ -13,9 +13,12 @@ except:
 def test_expectation_encounters_an_incorrect_parameter():
     with pytest.raises(exceptions.MemExpectationFormationError) as ex:
         MemExpectation(
-            "AK_ID", {
-                    Parameter(name="data_type", value="integer"),
-                    Parameter(name="bad_param", value="not_good")
+            "AK_ID", **{
+                    "parameters": [
+                        dict(name="data_type", value="integer"),
+                        dict(name="bad_param", value="not_good")
+                    ],
+                    "required": True
                 }
         )
         assert "bad_param is not a recognized col." in str(ex.value)

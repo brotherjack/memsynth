@@ -10,7 +10,7 @@ import pandas as pd
 
 from memsynth.config import uss_regex
 import memsynth.exceptions as ex
-from memsynth.parameters import Parameter, ACCEPTABLE_PARAMS
+from memsynth.parameters import Parameter, ACCEPTABLE_PARAMS, UNIQUE_PARAMS
 
 
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
@@ -20,42 +20,39 @@ class MemExpectation():
     """An expectation that a column of data is expected to conform to
 
     :param col: (str) Name of the column the expectation refers to
-    :param expectation: (iterable of `Parameter`) The various parameters of the expectation
+    :param parameters: (iterable of `Parameter`) The various parameters of the expectation
         which reflect an expectation of what the data is to conform to
     """
-    def  __init__(self, col, expectation):
+    def  __init__(self, col, parameters, required=True):
         self.col = col
-        self._acceptable_parameters = dict(
-            data_type=dict(unique=True, required=True),
-            regex=dict(unique=False, required=False),
-            nullable=dict(unique=True, required=False)
-        )
         self.parameters = set()
         self.fails = []
         self.soft_fails = []
-        self._form_expectation(expectation)
+        self.required = required
+        self._form_parameters(parameters)
 
-    def _form_expectation(self, params):
+    def _form_parameters(self, params):
         for param in params:
-            if param.name not in self._acceptable_parameters:
+            param_name = param.get('name')
+            if param_name not in ACCEPTABLE_PARAMS:
                 raise ex.MemExpectationFormationError(
-                    self.col, f"{param.name} is not a recognized col. "
-                    f"These are {self._acceptable_parameters.keys()}"
+                    self.col, f"{param_name} is not a recognized col. "
+                    f"These are {ACCEPTABLE_PARAMS}"
                 )
-            self.parameters.add(param.name)
-            if hasattr(self, param.name):
-                if self._acceptable_parameters[param.name].get('unique'):
+            self.parameters.add(param_name)
+            if hasattr(self, param_name):
+                if param.get('unique'):
                     raise ex.MemExpectationFormationError(
                         self.col,
-                        f"has multiple '{param.name}' unique parameters"
+                        f"has multiple '{param_name}' unique parameters"
                     )
                 else:
-                    getattr(self, param.name).append(param)
+                    getattr(self, param_name).append(param)
             else:
-                if self._acceptable_parameters[param.name].get('unique'):
-                    setattr(self, param.name, param)
+                if param_name in UNIQUE_PARAMS:
+                    setattr(self, param_name, Parameter(**param))
                 else:
-                    setattr(self, param.name, [param])
+                    setattr(self, param_name, [Parameter(**param)])
         if not self.parameters:
             raise ex.MemExpectationFormationError(
                 self.col, "There is no data_type for column"
@@ -89,10 +86,7 @@ class MemExpectation():
         :return: (boolean)
         """
         self.fails = []
-        chkdparams = [
-            k for k,v in self._acceptable_parameters.items()
-        ]
-        for param_name in chkdparams:
+        for param_name in ACCEPTABLE_PARAMS:
             checkfn_str = "_check_" + param_name
             if hasattr(self, checkfn_str):
                 for i,cell in enumerate(col):
@@ -144,7 +138,9 @@ class MemSynther():
                         col, "is not a valid column."
                     )
                 else:
-                    self.expectations[col] = [Parameter(**exp) for exp in exps]
+                    self.expectations[col] = MemExpectation(
+                        col, exps["parameters"], exps["required"]
+                    )
             #       found_cols.remove(col)
             # TODO: Might want to add a warning if a column has no expectations
 
@@ -174,8 +170,13 @@ class MemSynther():
                 f"No filename passed to MemSynther and no dataframe loaded "
                 f"from memory."
             )
-        expected_cols = set(self.expectations.keys())
-        actual_cols = set(df.columns)
+        expected_cols, not_required = set([]), set([])
+        for k, v in self.expectations.items():
+            if v.required:
+                expected_cols.add(k)
+            else:
+                not_required.add(k)
+        actual_cols = set(df.columns).difference(not_required)
         if expected_cols != actual_cols:
             if expected_cols.difference(actual_cols) == expected_cols:
                 raise ex.LoadMembershipListException(

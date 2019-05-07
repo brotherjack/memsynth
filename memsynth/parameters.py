@@ -1,5 +1,4 @@
 from collections import namedtuple
-import re
 
 
 Parameter = namedtuple(
@@ -8,10 +7,14 @@ Parameter = namedtuple(
 )
 Parameter.__new__.__defaults__ = (None, None, False, None)
 
-ACCEPTABLE_PARAMS = [
+ACCEPTABLE_PARAMS = (
     "data_type",
     "regex",
     "nullable",
     "relative_to",
-    "required"
-]
+)
+
+UNIQUE_PARAMS = (
+    "data_type",
+    "nullable",
+)
