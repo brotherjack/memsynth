@@ -222,12 +222,13 @@ class MemSynther():
         :param config: (dict) The keys are columns and the values are lists
             of `MemExpectation` classes that need to pass for the data in the
             column to be considered correct.
+
         :return: (boolean) If all columns pass
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
         pass
 
-    def load_from_excel(self, flist):
+    def load_from_excel(self, flist, softload=False):
         """Loads a membership list from an excel file
 
         Function loads a membership list in xlsx format and runs a
@@ -235,12 +236,14 @@ class MemSynther():
         what the `MemSynther` is expecting.
 
         :param flist: File name of the excel file with membership data
+        :param softload: (boolean, default False) If true, then
+            `LoadMembershipListException` is not raised on extra columns
         :raises: `memsynth.exceptions.LoadMembershipListException` if the
             data does not meet expectations.
         :return: None
         """
         try:
-            self.df = self._verify_memlist_format(flist)
+            self.df = self._verify_memlist_format(flist, softload)
         except ex.LoadMembershipListException as lmle:
             print(f"Encountered a problem loading membership list {flist}")
             self.df = None
@@ -253,7 +256,7 @@ class MemSynther():
             self.df = None
             raise
 
-    def load_from_memory(self, mem):
+    def load_from_memory(self, mem, softload=False):
         """Loads a membership list from a variable in memory
 
         Function attempts to create membership `pandas.DataFrame` from a
@@ -261,13 +264,15 @@ class MemSynther():
 
         :param mem: Membership data in a form that can be made into
             a `pandas.DataFrame`
+        :param softload: (boolean, default False) If true, then
+            `LoadMembershipListException` is not raised on extra columns
         :raises: `memsynth.exceptions.LoadMembershipListException` if the
             data does not meet expectations.
         :return: None
         """
         try:
             self.df = pd.DataFrame(mem)
-            self._verify_memlist_format()
+            self._verify_memlist_format(softload=softload)
         except ex.LoadMembershipListException as lmle:
             print("Encountered a problem loading membership list from memory")
             self.df = None
