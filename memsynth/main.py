@@ -147,15 +147,14 @@ class MemSynther():
             #       found_cols.remove(col)
             # TODO: Might want to add a warning if a column has no expectations
 
-    def _verify_memlist_format(self, fname=None, softload=False):
+    def _verify_memlist_format(self, df=None, softload=False):
         """Checks the format of the membership list
 
         Checks format of columns and other elements of the membership list
         sent to us from National DSA
 
-        :param fname: (str, default None) File name of the excel file with
-            membership data, if None the `MemSynther` attempts to read from
-            `df` parameter
+        :param df: (`pandas.DataFrame`, default None) DataFrame containing
+            membership infomation. If none, then class member `df` has been set
         :param softload: (boolean, default False) If true, then
             `LoadMembershipListException` is not raised on extra columns
         :return `pandas.DataFrame`: Returns the membership list, if verified
@@ -164,15 +163,8 @@ class MemSynther():
             if a filename is not supplied and the membership list hasn't been
             loaded from a variable in memory,
         """
-        if fname:
-            df = pd.read_excel(fname)
-        elif not fname and hasattr(self.df, "columns"):
+        if df is None:
             df = self.df
-        else:
-            raise ex.LoadMembershipListException(
-                f"No filename passed to MemSynther and no dataframe loaded "
-                f"from memory."
-            )
         expected_cols, not_required = set([]), set([])
         for k, v in self.expectations.items():
             if v.required:
@@ -233,6 +225,10 @@ class MemSynther():
         """
         pass
 
+    def _load(self, df, softload=False):
+        df = self._verify_memlist_format(df, softload)
+        return df
+
     def load_from_excel(self, flist, softload=False):
         """Loads a membership list from an excel file
 
@@ -248,7 +244,7 @@ class MemSynther():
         :return: None
         """
         try:
-            self.df = self._verify_memlist_format(flist, softload)
+            self.df = self._load(pd.read_excel(flist), softload)
         except ex.LoadMembershipListException as lmle:
             print(f"Encountered a problem loading membership list {flist}")
             self.df = None
@@ -276,13 +272,10 @@ class MemSynther():
         :return: None
         """
         try:
-            self.df = pd.DataFrame(mem)
-            self._verify_memlist_format(softload=softload)
-        except ex.LoadMembershipListException as lmle:
-            print("Encountered a problem loading membership list from memory")
+            if mem and hasattr(mem, "columns"):
+                self.df = self._load(mem, softload)
+            else:
+                self.df = self._load(pd.DataFrame(mem), softload=softload)
+        except Exception as e:
             self.df = None
-            raise lmle
-        except:
-            print("Encountered an unkonwn problem loading membership list")
-            self.df = None
-            raise
+            raise ex.LoadMembershipListException(self, msg=str(e))
