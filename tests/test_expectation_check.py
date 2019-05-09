@@ -2,7 +2,7 @@ from numpy import nan
 import pytest
 
 from memsynth import exceptions
-from memsynth.main import MemExpectation, Parameter
+from memsynth.main import MemExpectation
 
 try:
     import tests.conftest as fixtures
