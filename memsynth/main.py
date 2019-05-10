@@ -227,6 +227,10 @@ class MemSynther():
 
     def _load(self, df, softload=False):
         df = self._verify_memlist_format(df, softload)
+        if hasattr(self, "expectations") and len(self.expectations.keys()) != 0:
+            for col, expectation in self.expectations.items():
+                if expectation.data_type.value.startswith("str"):
+                    df[col].astype("object", inplace=True)
         return df
 
     def load_from_excel(self, flist, softload=False):

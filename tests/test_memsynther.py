@@ -8,4 +8,4 @@ except:
 
 @pytest.mark.usefixtures('memsynther')
 def test_memsynther_loads_strings_correctly(memsynther):
-    assert memsynther.df.AK_ID.dtype == 'object'
+    assert memsynther.df.first_name.dtype == 'object'

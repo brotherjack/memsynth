@@ -8,12 +8,6 @@
           "args": null
         },
         {
-          "name": "regex",
-          "value": "[0-9]+",
-          "soft": false,
-          "args": null
-        },
-        {
           "name": "nullable",
           "value": false,
           "soft": false,
@@ -27,12 +21,6 @@
       {
         "name": "data_type",
         "value": "integer",
-        "soft": false,
-        "args": null
-      },
-      {
-        "name": "regex",
-        "value": "[0-9]+",
         "soft": false,
         "args": null
       },
