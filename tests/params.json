@@ -288,7 +288,7 @@
       },
       {
         "name": "regex",
-        "value": "^[A-Za-z\\-\\. ]$",
+        "value": "^[A-Za-z\\-\\. ]+$",
         "soft": false,
         "args": null
       },
