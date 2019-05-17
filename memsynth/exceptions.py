@@ -47,14 +47,16 @@ class MembershipListIntegrityExcepton(MemSynthBaseError):
 
 
     :param memsynth_obj: the MemSynther class that is raising the error
-    :param expectation: (`memsynth.MembershipListIntegrityExcepton`) The
-        failed expectation.
     """
-    def __init__(self, memsynth_obj, expectation):
+    def __init__(self, memsynth_obj):
+        failed_columns = ",".join([
+            c for c,e in memsynth_obj.expectations.items() if len(e.fails) > 0
+        ])
         super().__init__(
             memsynth_obj,
-            msg=f"There was an error in '{expectation.col}': {expectation.err}"
+            msg=f"There was an error in the following columns: {failed_columns}"
         )
+        self.expectations = memsynth_obj.expectations
 
 
 class MemExpectationBaseError(Exception):

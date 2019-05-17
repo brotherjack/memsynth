@@ -52,7 +52,7 @@ class MemExpectation():
                         f"has multiple '{param_name}' unique parameters"
                     )
                 else:
-                    getattr(self, param_name).append(param)
+                    getattr(self, param_name).append(Parameter(**param))
             else:
                 if param_name in UNIQUE_PARAMS:
                     setattr(self, param_name, Parameter(**param))
@@ -71,6 +71,10 @@ class MemExpectation():
                 self.fails.append(f)
                 yield None, getattr(self, 'nullable')
         else:
+            # For some reason Pandas delivers items from Object Series based on
+            # assumed type, not as strings. Therefore, '4' is an integer.
+            # We need to make sure we are working on strings
+            data = str(data)
             for rx in getattr(self, 'regex'):
                 flags = 0 if not 'args' in rx else rx.args.get('flags', 0)
                 if rx.args and 'match' in rx.args:
@@ -84,17 +88,19 @@ class MemExpectation():
                 else:
                     yield rx.value.match(data, flags) is not None, rx
 
-    def check(self, col):
+    def check(self, data):
         """Checks to see if the condition of the expectation are met
 
-        :param col: (list of str) The data to check the expectation against
+        :param data: (`pd.Series`) Data to check parameters against
+
         :return: (boolean)
         """
         self.fails = []
-        for param_name in ACCEPTABLE_PARAMS:
+        parameters = set(ACCEPTABLE_PARAMS).intersection(self.parameters)
+        for param_name in parameters:
             checkfn_str = "_check_" + param_name
             if hasattr(self, checkfn_str):
-                for i,cell in enumerate(col):
+                for i,cell in enumerate(data):
                     for check, param in getattr(self, checkfn_str)(cell, i):
                         try:
                             # If None, then another thing failed in the
@@ -123,6 +129,8 @@ class MemSynther():
     def __init__(self):
         self.df = None
         self.expectations = {}
+        self.failures =[]
+        self.soft_failures = []
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
@@ -225,7 +233,15 @@ class MemSynther():
         :return: (boolean) If all columns pass
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
-        pass
+        self.failures, self.soft_failures = [], []
+        for col, exp in self.expectations.items():
+            if not exp.check(self.df[col]):
+                self.failures.append(exp)
+            if len(exp.soft_fails) != 0:
+                self.soft_failures.append(exp)
+        if len(self.failures) > 0:
+            raise ex.MembershipListIntegrityExcepton(self)
+
 
     def _load(self, df, softload=False):
         df = self._verify_memlist_format(df, softload)

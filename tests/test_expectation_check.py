@@ -93,7 +93,3 @@ def test_nullable_fail_properly(correct_ak_id_exp):
     assert not chk and "nullable" in [
         n.name for f in correct_ak_id_exp.fails for n in f.why
     ]
-
-@pytest.mark.usefixtures("memsynther")
-def test_verify_memlist_data_integrity(memsynther):
-    assert False

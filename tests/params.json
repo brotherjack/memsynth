@@ -234,7 +234,7 @@
       },
       {
         "name": "regex",
-        "value": "^\\d+[A-Za-z0-9\\-\\.]+$",
+        "value": "^\\d+[A-Za-z0-9\\-\\. ]+$",
         "soft": false,
         "args": null
       },
