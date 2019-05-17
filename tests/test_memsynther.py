@@ -30,6 +30,6 @@ def test_memsynther_loads_booleans_correctly(memsynther):
 def test_memsynther_loads_datetimes_correctly(memsynther):
     assert memsynther.df.Xdate.dtype == "datetime64[ns]"
 
-@pytest.mark.usefixtures("memsynther")
-def test_verify_memlist_data_integrity(memsynther):
-    assert memsynther.verify_memlist_data_integrity() == True
+@pytest.mark.usefixtures("memsynther_ideallist")
+def test_verify_memlist_data_integrity_on_ideal_list(memsynther_ideallist):
+    assert memsynther_ideallist.verify_memlist_data_integrity() == True

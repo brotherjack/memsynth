@@ -98,4 +98,4 @@ US_STATES = {
     "WY": "Wyoming"
 }
 
-uss_regex = re.compile("|".join(US_STATES.keys()))
+uss_regex = re.compile("|".join(US_STATES.keys()), flags=re.IGNORECASE)

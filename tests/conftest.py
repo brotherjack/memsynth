@@ -63,6 +63,7 @@ ADDRESSES = [
 ADDRESSES_SOFT_FAILS_PARTIAL_MATCH = 1
 ADDRESSES_SOFT_FAILS_FULL_MATCH = 3
 FAKE_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa.xlsx")
+FAKE_IDEAL_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa_ideal.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 PARAM_JSON_FILE = os.path.join(config.TEST_DIR, "params.json")
 
@@ -71,6 +72,13 @@ def memsynther():
     memsynth = MemSynther()
     memsynth.load_expectations_from_json(PARAM_JSON_FILE)
     memsynth.load_from_excel(FAKE_MEM_LIST)
+    return memsynth
+
+@pytest.fixture()
+def memsynther_ideallist():
+    memsynth = MemSynther()
+    memsynth.load_expectations_from_json(PARAM_JSON_FILE)
+    memsynth.load_from_excel(FAKE_IDEAL_MEM_LIST)
     return memsynth
 
 @pytest.fixture

@@ -108,3 +108,6 @@ venv.bak/
 
 # JetBrains IDE Stuff
 .idea
+
+# Locked spreadsheets
+tests/.~lock.*.xlsx#

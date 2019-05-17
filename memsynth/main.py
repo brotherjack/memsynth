@@ -82,7 +82,7 @@ class MemExpectation():
                         yield rx.value.fullmatch(data, flags) is not None, rx
                     elif rx.args['match'].lower() == 'us_states':
                         # re flag for IGNORECASE == 2
-                        yield uss_regex.fullmatch(data, 2) is not None, rx
+                        yield uss_regex.fullmatch(data) is not None, rx
                     else:
                         yield rx.value.match(data, flags) is not None, rx
                 else:
