@@ -95,7 +95,7 @@
     "parameters": [
       {
         "name": "data_type",
-        "value": "string",
+        "value": "object",
         "soft": false,
         "args": null
       },

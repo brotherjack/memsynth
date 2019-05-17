@@ -11,7 +11,9 @@ import pandas as pd
 
 from memsynth.config import uss_regex
 import memsynth.exceptions as ex
-from memsynth.parameters import Parameter, ACCEPTABLE_PARAMS, UNIQUE_PARAMS
+from memsynth.parameters import (
+    Parameter, ACCEPTABLE_PARAMS, UNIQUE_PARAMS, DATATYPE_MAP
+)
 
 
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
@@ -229,9 +231,24 @@ class MemSynther():
         df = self._verify_memlist_format(df, softload)
         if hasattr(self, "expectations") and len(self.expectations.keys()) != 0:
             for col, expectation in self.expectations.items():
-                if expectation.data_type.value.startswith("str"):
-                    df[col].astype("object", inplace=True)
+                dtype = expectation.data_type.value
+                if dtype.lower() in DATATYPE_MAP:
+                    dtype = DATATYPE_MAP[dtype.lower()]
+                # The following is very hacky, but nececessary for how Pandas
+                # (and ultimately Numpy) handle null values in Integer series
+                # More here: https://pandas.pydata.org/pandas-docs/version/0.24/whatsnew/v0.24.0.html#optional-integer-na-support
+                series_should_be_int = dtype.lower().startswith("int")
+                series_is_not_an_int = not hasattr(df[col].dtype, 'is_unsigned_integer')
+                if expectation.nullable and \
+                        (series_should_be_int  and series_is_not_an_int):
+                    df[col] = self._convert_npobject_series_with_nulls_to_int(df[col], dtype)
+                else:
+                    df[col] = df[col].astype(dtype, inplace=True)
         return df
+
+    def _convert_npobject_series_with_nulls_to_int(self, series, inttype="Int64"):
+        lst = [int(x) if not pd.isnull(x) else x for x in series.tolist()]
+        return pd.Series(lst, dtype=inttype.capitalize())
 
     def load_from_excel(self, flist, softload=False):
         """Loads a membership list from an excel file
