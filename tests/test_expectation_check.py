@@ -1,7 +1,7 @@
 from numpy import nan
 import pytest
 
-from memsynth import exceptions
+from memsynth import exceptions, config
 from memsynth.main import MemExpectation
 
 try:
@@ -94,13 +94,9 @@ def test_nullable_fail_properly(correct_ak_id_exp):
         n.name for f in correct_ak_id_exp.fails for n in f.why
     ]
 
-# @pytest.mark.parametrize(
-#     'col', [
-#         ("AK_ID", "del"),
-#         ("DERP", "add"),
-#         (("AK_ID", "DERP"), 'add_and_del')
-#     ]
-# )
-# @pytest.mark.usefixtures("memsynther_ideallist")
-# def test_check_ideal(memsynther_ideallist):
-#     assert memsynther_ideallist
+@pytest.mark.parametrize(
+    'col', config.EXPECTED_FORMAT_MEM_LIST['columns']
+)
+@pytest.mark.usefixtures("memsynther_ideallist")
+def test_check_ideal(memsynther_ideallist, col):
+    assert memsynther_ideallist.expectations[col].check(memsynther_ideallist.df[col])
