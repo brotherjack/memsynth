@@ -241,6 +241,8 @@ class MemSynther():
                 self.soft_failures.append(exp)
         if len(self.failures) > 0:
             raise ex.MembershipListIntegrityExcepton(self)
+        else:
+            return True
 
 
     def _load(self, df, softload=False):

@@ -93,3 +93,14 @@ def test_nullable_fail_properly(correct_ak_id_exp):
     assert not chk and "nullable" in [
         n.name for f in correct_ak_id_exp.fails for n in f.why
     ]
+
+# @pytest.mark.parametrize(
+#     'col', [
+#         ("AK_ID", "del"),
+#         ("DERP", "add"),
+#         (("AK_ID", "DERP"), 'add_and_del')
+#     ]
+# )
+# @pytest.mark.usefixtures("memsynther_ideallist")
+# def test_check_ideal(memsynther_ideallist):
+#     assert memsynther_ideallist
