@@ -34,6 +34,10 @@ class MemExpectation():
         self.required = required
         self._form_parameters(parameters)
 
+    def __repr__(self):
+        return f"<MemExpectation: {self.col} - Fails: {len(self.fails)} " \
+            f"- Soft Fails: {len(self.soft_fails)}>"
+
     def _form_parameters(self, params):
         for param in params:
             param_name = param.get('name')
@@ -131,6 +135,10 @@ class MemSynther():
         self.expectations = {}
         self.failures =[]
         self.soft_failures = []
+
+    def __repr__(self):
+        return f"<MemSynther - Failures {len(self.failures)} " \
+            f"- Soft Failures {len(self.soft_failures)}>"
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
