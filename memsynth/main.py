@@ -249,7 +249,8 @@ class MemSynther():
             of `MemExpectation` classes that need to pass for the data in the
             column to be considered correct.
 
-        :return: (boolean) If all columns pass
+        :return: (boolean) True, If all columns pass and False if columns pass,
+            but with soft errors.
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
         self.failures, self.soft_failures = {}, {}
@@ -260,6 +261,8 @@ class MemSynther():
                 self.soft_failures[col] = exp
         if len(self.failures) > 0:
             raise ex.MembershipListIntegrityExcepton(self)
+        elif len(self.soft_failures) > 0:
+            return False
         else:
             return True
 
