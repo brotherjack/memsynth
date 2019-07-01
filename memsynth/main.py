@@ -130,15 +130,26 @@ class MemSynther():
     This class manages membership list files, coordinates with local and
     remote databases, and API's
     """
-    def __init__(self):
+    def __init__(self, name=None):
         self.df = None
+        self.name = name
         self.expectations = {}
         self.failures = {}
         self.soft_failures = {}
 
     def __repr__(self):
-        return f"<MemSynther - Failures {len(self.failures.keys())} " \
-            f"- Soft Failures {len(self.soft_failures.keys())}>"
+        name_field = f'- {self.name}' if self.name else f'object at {hex(id(self))}'
+        exp_field = ' - Expectations '
+        exp_field += ' LOADED' if self.expectations else ' NULL'
+        df_field = ' - Data Frame '
+        if self.df is None:
+            df_field += ' NULL '
+        else:
+            if self.df.empty:
+                df_field += ' EMPTY '
+            else:
+                df_field += ' LOADED '
+        return f"<MemSynther {name_field}{exp_field}{df_field}>"
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
