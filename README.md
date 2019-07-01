@@ -30,25 +30,27 @@ msy = MemSynther()
 msy.load_expectations_from_json("tests/params.json")
 msy.load_from_excel("tests/fakeodsa.xlsx")
 
-# Check to make sure it conforms to those expectations
-msy.verify_memlist_data_integrity()
-
-# Check failures
-for fail_column in msy.failures.keys():
-    print(
-        f"{len(msy.failures[fail_column].fails)} failures found on "
-        f"column '{fail_column}'"
-    )
-    for failure in msy.failures[fail_column].fails:
-        print(f"On line {failure.line}: ")
-        for param in failure.why:
-            print(
-                f"\t- {'soft' if param.soft else 'HARD'} "
-                f"failure on the '{param.name}' constraint, "
-                f"value='{param.value}', with args='{param.args}' "
+# Check to make sure it conforms to those expectations...it won't :/
+from memsynth import exceptions
+try:
+    msy.verify_memlist_data_integrity()
+except exceptions.MembershipListIntegrityExcepton:
+    # Check failures
+    for fail_column in msy.failures.keys():
+        print(
+            f"{len(msy.failures[fail_column].fails)} failures found on "
+            f"column '{fail_column}'"
         )
-        print(f"Data at line is {failure.data}")
-    print("")
+        for failure in msy.failures[fail_column].fails:
+            print(f"On line {failure.line}: ")
+            for param in failure.why:
+                print(
+                    f"\t- {'soft' if param.soft else 'HARD'} "
+                    f"failure on the '{param.name}' constraint, "
+                    f"value='{param.value}', with args='{param.args}' "
+            )
+            print(f"Data at line is {failure.data}")
+        print("")
 ```
 
 ## Assisting in Development
