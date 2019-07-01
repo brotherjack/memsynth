@@ -133,12 +133,12 @@ class MemSynther():
     def __init__(self):
         self.df = None
         self.expectations = {}
-        self.failures =[]
-        self.soft_failures = []
+        self.failures = {}
+        self.soft_failures = {}
 
     def __repr__(self):
-        return f"<MemSynther - Failures {len(self.failures)} " \
-            f"- Soft Failures {len(self.soft_failures)}>"
+        return f"<MemSynther - Failures {len(self.failures.keys())} " \
+            f"- Soft Failures {len(self.soft_failures.keys())}>"
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
@@ -241,12 +241,12 @@ class MemSynther():
         :return: (boolean) If all columns pass
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
-        self.failures, self.soft_failures = [], []
+        self.failures, self.soft_failures = {}, {}
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
-                self.failures.append(exp)
+                self.failures[col]= exp
             if len(exp.soft_fails) != 0:
-                self.soft_failures.append(exp)
+                self.soft_failures[col] = exp
         if len(self.failures) > 0:
             raise ex.MembershipListIntegrityExcepton(self)
         else:
