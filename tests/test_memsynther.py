@@ -33,3 +33,7 @@ def test_memsynther_loads_datetimes_correctly(memsynther):
 @pytest.mark.usefixtures("memsynther_ideallist")
 def test_verify_memlist_data_integrity_on_ideal_list(memsynther_ideallist):
     assert memsynther_ideallist.verify_memlist_data_integrity() == True
+
+@pytest.mark.usefixtures("memsynther_ideallist")
+def test_verify_memlist_data_integrity_on_less_than_ideal_list(memsynther):
+    assert memsynther.verify_memlist_data_integrity() == False
