@@ -1,5 +1,6 @@
 import pytest
 
+from memsynth import exceptions
 try:
     import tests.conftest as fixtures
 except:
@@ -34,6 +35,11 @@ def test_memsynther_loads_datetimes_correctly(memsynther):
 def test_verify_memlist_data_integrity_on_ideal_list(memsynther_ideallist):
     assert memsynther_ideallist.verify_memlist_data_integrity() == True
 
+@pytest.mark.usefixtures("memsynther_less_than_ideallist")
+def test_verify_memlist_data_integrity_on_less_than_ideal_list(memsynther_less_than_ideallist):
+    assert memsynther_less_than_ideallist.verify_memlist_data_integrity() == False
+
 @pytest.mark.usefixtures("memsynther")
-def test_verify_memlist_data_integrity_on_less_than_ideal_list(memsynther):
-    assert memsynther.verify_memlist_data_integrity() == False
+def test_verify_memlist_data_integrity_on_normal_list(memsynther):
+    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
+        memsynther.verify_memlist_data_integrity()
