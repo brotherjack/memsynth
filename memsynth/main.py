@@ -5,6 +5,7 @@ Orlando DSA's membership list updating and maintaince solution.
 """
 from collections import namedtuple
 import json
+import logging
 import re
 
 import pandas as pd
@@ -14,7 +15,7 @@ import memsynth.exceptions as ex
 from memsynth.parameters import (
     Parameter, ACCEPTABLE_PARAMS, UNIQUE_PARAMS, DATATYPE_MAP
 )
-
+from memsynth.utils import setup_logging
 
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
 
@@ -340,3 +341,13 @@ class MemSynther():
         except Exception as e:
             self.df = None
             raise ex.LoadMembershipListException(self, msg=str(e))
+
+if __name__ == '__main__':
+    setup_logging(default_level=logging.DEBUG)
+
+    logger = logging.getLogger(__name__)
+    logger.debug("No deal at all")
+    logger.info("Something you want to know, but no real deal")
+    logger.warning("I'm starting to get nervous")
+    logger.error("I'm really worried now")
+    logger.critical("Pants == Shit()")
