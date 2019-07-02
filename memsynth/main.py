@@ -240,7 +240,7 @@ class MemSynther():
             if a filename is not supplied and the membership list hasn't been
             loaded from a variable in memory,
         """
-        self.logger.debug("Verifying memlist format on ")
+        self.logger.debug(f"Verifying memlist format on {self.name}")
         if df is None:
             df = self.df
         expected_cols, not_required = set([]), set([])
