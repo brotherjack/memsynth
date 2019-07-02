@@ -7,6 +7,7 @@ from collections import namedtuple
 from enum import Enum, auto
 import json
 import logging
+import os
 import re
 
 import pandas as pd
@@ -302,18 +303,25 @@ class MemSynther():
             but with soft errors.
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
-        self.failures, self.soft_failures = {}, {}
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
                 self.list_cond = ListState.FAILURE
             if len(exp.soft_fails) != 0 and self.list_cond != ListState.FAILURE:
                 self.list_cond = ListState.SOFT_FAILURE
-
         if self.list_cond == ListState.FAILURE:
+            self.logger.error(
+                f"Check on membership list '{self.name}' has encountered failures"
+            )
             raise ex.MembershipListIntegrityExcepton(self)
         elif self.list_cond == ListState.SOFT_FAILURE:
+            self.logger.warning(
+                f"Check on membership list '{self.name}' has encountered soft failures"
+            )
             return False
         else:
+            self.logger.info(
+                f"Check on membership list '{self.name}' has passed successfully"
+            )
             return True
 
 
@@ -354,6 +362,12 @@ class MemSynther():
             data does not meet expectations.
         :return: None
         """
+        if self.name.startswith("object at"):
+            nname = os.path.split(flist)[1]
+            self.logger.debug(
+                f"Chaging name of MemSynther '{self.name}' to '{nname}'"
+            )
+            self.name = nname
         try:
             self.df = self._load(pd.read_excel(flist), softload)
         except ex.LoadMembershipListException as lmle:
