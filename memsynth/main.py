@@ -194,10 +194,9 @@ class MemSynther():
             if len(self.expectations[col].fails) > 0:
                 failures[col] = self.expectations[col].fails
             if include_soft:
-                if len(self.expectations[col].soft_fails):
-                    failures[col].extend(self.expectations[col].soft_fails)
-                else:
-                    failures[col] = self.expectations[col].soft_fails
+                if len(self.expectations[col].soft_fails) > 0:
+                    failures.setdefault(col, []).extend(self.expectations[col].soft_fails)
+
         return failures
 
     def load_expectations_from_json(self, fname):
