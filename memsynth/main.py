@@ -4,6 +4,7 @@ Orlando DSA's membership list updating and maintaince solution.
 
 """
 from collections import namedtuple
+from enum import Enum, auto
 import json
 import logging
 import re
@@ -18,6 +19,12 @@ from memsynth.parameters import (
 from memsynth.utils import setup_logging
 
 Failure = namedtuple("Failure", ['line', 'why', 'data'])
+
+class ListState(Enum):
+    SUCCESS = "SUCCESS"
+    FAILURE = "FAILURE"
+    SOFT_FAILURE = "SOFT_FAILURE"
+    DIRTY = "DIRTY"
 
 
 class MemExpectation():
@@ -140,6 +147,7 @@ class MemSynther():
         self.df = None
         self.name = name
         self.expectations = {}
+        self.list_cond = ListState.DIRTY
 
     def __repr__(self):
         name_field = f'- {self.name}' if self.name else f'object at {hex(id(self))}'
@@ -153,7 +161,8 @@ class MemSynther():
                 df_field += ' EMPTY '
             else:
                 df_field += ' LOADED '
-        return f"<MemSynther {name_field}{exp_field}{df_field}>"
+        cond_field = f' - Condition {self.list_cond.value}'
+        return f"<MemSynther {name_field}{exp_field}{df_field}{cond_field}>"
 
     def get_failures(self, fails=None, include_soft=False):
         cols = None
@@ -279,12 +288,13 @@ class MemSynther():
         self.failures, self.soft_failures = {}, {}
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
-                self.failures[col]= exp
-            if len(exp.soft_fails) != 0:
-                self.soft_failures[col] = exp
-        if len(self.failures) > 0:
+                self.list_cond = ListState.FAILURE
+            if len(exp.soft_fails) != 0 and self.list_cond != ListState.FAILURE:
+                self.list_cond = ListState.SOFT_FAILURE
+
+        if self.list_cond == ListState.FAILURE:
             raise ex.MembershipListIntegrityExcepton(self)
-        elif len(self.soft_failures) > 0:
+        elif self.list_cond == ListState.SOFT_FAILURE:
             return False
         else:
             return True
