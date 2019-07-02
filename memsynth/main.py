@@ -35,13 +35,13 @@ class MemExpectation():
         which reflect an expectation of what the data is to conform to
     """
     def  __init__(self, col, parameters, required=True):
+        self.logger = logging.getLogger(type(self).__name__)
         self.col = col
         self.parameters = set()
         self.fails = []
         self.soft_fails = []
         self.required = required
         self._form_parameters(parameters)
-        self.logger = logging.getLogger(type(self).__name__)
 
     def __repr__(self):
         return f"<MemExpectation: {self.col} - Fails: {len(self.fails)} " \
@@ -50,6 +50,7 @@ class MemExpectation():
     def _form_parameters(self, params):
         for param in params:
             param_name = param.get('name')
+            self.logger.debug(f"Forming parameter '{param_name}'...")
             if param_name not in ACCEPTABLE_PARAMS:
                 raise ex.MemExpectationFormationError(
                     self.col, f"{param_name} is not a recognized col. "
@@ -57,6 +58,7 @@ class MemExpectation():
                 )
             self.parameters.add(param_name)
             if param_name == 'regex':
+                self.logger.debug(f"Compiling regular expression '{param['value']}'")
                 param['value'] = re.compile(param['value'])
             if hasattr(self, param_name):
                 if param.get('unique'):
@@ -68,8 +70,10 @@ class MemExpectation():
                     getattr(self, param_name).append(Parameter(**param))
             else:
                 if param_name in UNIQUE_PARAMS:
+                    self.logger.debug(f"Setting unique parameter '{param_name}'")
                     setattr(self, param_name, Parameter(**param))
                 else:
+                    self.logger.debug(f"Setting parameter '{param_name}'")
                     setattr(self, param_name, [Parameter(**param)])
         if not self.parameters:
             raise ex.MemExpectationFormationError(
@@ -102,7 +106,8 @@ class MemExpectation():
                     yield rx.value.match(data, flags) is not None, rx
 
     def clear(self):
-        self.logger.info("Clearing failures")
+        if len(self.fails) > 0 or len(self.soft_fails) > 0:
+            self.logger.info("Clearing failures")
         self.fails, self.soft_fails = [], []
 
     def check(self, data):
@@ -112,10 +117,12 @@ class MemExpectation():
 
         :return: (boolean)
         """
-        self.fails = []
+        self.logger.info(f"Checking column '{self.col}'...")
+        self.clear()
         parameters = set(ACCEPTABLE_PARAMS).intersection(self.parameters)
         for param_name in parameters:
             checkfn_str = "_check_" + param_name
+            self.logger.debug(f"Running '{checkfn_str}' on '{data}'")
             if hasattr(self, checkfn_str):
                 for i,cell in enumerate(data):
                     for check, param in getattr(self, checkfn_str)(cell, i):
@@ -127,11 +134,15 @@ class MemExpectation():
                             else:
                                 assert check
                         except AssertionError:
+                            # TODO: Why is param in a list?
                             f = Failure(line=i, why=[param], data=cell)
+                            fmsg = f"Found a failure on line '{i}' running '{param}' on '{cell}'"
                             if param.soft:
                                 self.soft_fails.append(f)
+                                self.logger.warning(fmsg)
                             else:
                                 self.fails.append(f)
+                                self.logger.error(fmsg)
                         except:
                             raise
         return len(self.fails) == 0
@@ -144,13 +155,14 @@ class MemSynther():
     remote databases, and API's
     """
     def __init__(self, name=None):
+        self.logger = logging.getLogger(type(self).__name__)
         self.df = None
-        self.name = name
+        self.name = name if name else f'object at {hex(id(self))}'
         self.expectations = {}
         self.list_cond = ListState.DIRTY
 
     def __repr__(self):
-        name_field = f'- {self.name}' if self.name else f'object at {hex(id(self))}'
+        name_field = f'- {self.name}'
         exp_field = ' - Expectations '
         exp_field += ' LOADED' if self.expectations else ' NULL'
         df_field = ' - Data Frame '
@@ -169,10 +181,14 @@ class MemSynther():
         if fails is None:
             cols = EXPECTED_FORMAT_MEM_LIST['columns']
         else:
-            if hasattr(fails, 'capitalize'): #(ie. is a 'fail' not 'fails'
+            if hasattr(fails, 'capitalize'): # (ie. is a 'fail' not 'fails')
                 fails = [fails]
             cols = set(fails).intersection(EXPECTED_FORMAT_MEM_LIST['columns'])
         failures = {}
+        self.logger.debug(
+            f"Getting failures on columns '{cols}' "
+            f"{'including soft failures' if include_soft else ''}"
+        )
         for col in cols:
             if len(self.expectations[col].fails) > 0:
                 failures[col] = self.expectations[col].fails
@@ -224,6 +240,7 @@ class MemSynther():
             if a filename is not supplied and the membership list hasn't been
             loaded from a variable in memory,
         """
+        self.logger.debug("Verifying memlist format on ")
         if df is None:
             df = self.df
         expected_cols, not_required = set([]), set([])
