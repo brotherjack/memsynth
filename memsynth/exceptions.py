@@ -49,7 +49,7 @@ class MembershipListIntegrityExcepton(MemSynthBaseError):
     :param memsynth_obj: the MemSynther class that is raising the error
     """
     def __init__(self, memsynth_obj):
-        failed_columns = ",".join([
+        failed_columns = ", ".join([
             c for c,e in memsynth_obj.expectations.items() if len(e.fails) > 0
         ])
         super().__init__(

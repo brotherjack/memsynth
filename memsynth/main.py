@@ -302,6 +302,8 @@ class MemSynther():
             but with soft errors.
         :raises `MembershipListIntegrityExcepton`: If a column fails
         """
+        if verify_format:
+            self._verify_memlist_format(self.df)
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
                 self.list_cond = ListState.FAILURE
