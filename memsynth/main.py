@@ -19,7 +19,42 @@ from memsynth.parameters import (
 )
 from memsynth.utils import setup_logging
 
-Failure = namedtuple("Failure", ['line', 'why', 'data'])
+
+class Failure:
+    def __init__(self, line, why, data):
+        self.logger = logging.getLogger(type(self).__name__)
+        self.data = data
+        self.is_soft = why.soft
+        self._why = [why]
+        self.line = line
+
+    def __repr__(self):
+        return f"<Failure: Why ({self.reasons}) - Data {self.data}>"
+
+    @property
+    def reasons(self):
+        return ", ".join([r.name for r in self.why])
+
+    @reasons.setter
+    def reasons(self, x):
+        self.logger.warning(f"Trying to set reasons to '{x}'. Silly Billy.")
+
+    @property
+    def why(self):
+        return self._why
+
+    @why.setter
+    def why(self, reason):
+        if self._why:
+            self._why.append(reason)
+        else:
+            errmsg = "Why is there no _why!?"
+            self.logger.error(errmsg)
+            raise AttributeError(errmsg)
+
+        if not reason.soft:
+            self.is_soft = False
+
 
 class ListState(Enum):
     SUCCESS = "SUCCESS"
@@ -39,14 +74,35 @@ class MemExpectation():
         self.logger = logging.getLogger(type(self).__name__)
         self.col = col
         self.parameters = set()
-        self.fails = []
-        self.soft_fails = []
+        self._fails = []
         self.required = required
         self._form_parameters(parameters)
 
     def __repr__(self):
         return f"<MemExpectation: {self.col} - Fails: {len(self.fails)} " \
             f"- Soft Fails: {len(self.soft_fails)}>"
+
+    @property
+    def fails(self):
+        return [fail for fail in self._fails if not fail.is_soft]
+
+    @fails.setter
+    def fails(self, x):
+        self.logger.warning(f"Attempting to add {x} to fails property.")
+
+    @property
+    def soft_fails(self):
+        return [fail for fail in self._fails if fail.is_soft]
+
+    @soft_fails.setter
+    def soft_fails(self, x):
+        self.logger.warning(f"Attempting to add {x} to soft_fails property.")
+
+    def is_hard_failure(self):
+        return len(self.fails) > 0
+
+    def is_soft_failure(self):
+        return len(self.soft_fails) > 0 and not self.is_hard_failure()
 
     def _form_parameters(self, params):
         for param in params:
@@ -84,10 +140,7 @@ class MemExpectation():
 
     def _check_regex(self, data, i):
         if pd.isnull(data):
-            if hasattr(self, 'nullable') and (self.nullable.value == False):
-                f = Failure(line=i, why=[Parameter(name='nullable')], data=data)
-                self.fails.append(f)
-                yield None, getattr(self, 'nullable')
+            yield True, None
         else:
             # For some reason Pandas delivers items from Object Series based on
             # assumed type, not as strings. Therefore, '4' is an integer.
@@ -106,10 +159,14 @@ class MemExpectation():
                 else:
                     yield rx.value.match(data, flags) is not None, rx
 
+    def _check_nullable(self, data, i):
+        if not self.nullable.value:
+            yield not pd.isnull(data), getattr(self, 'nullable')
+
     def clear(self):
-        if len(self.fails) > 0 or len(self.soft_fails) > 0:
+        if len(self._fails) > 0:
             self.logger.info("Clearing failures")
-        self.fails, self.soft_fails = [], []
+        self._fails = []
 
     def check(self, data):
         """Checks to see if the condition of the expectation are met
@@ -121,12 +178,15 @@ class MemExpectation():
         self.logger.info(f"Checking column '{self.col}'...")
         self.clear()
         parameters = set(ACCEPTABLE_PARAMS).intersection(self.parameters)
-        for param_name in parameters:
-            checkfn_str = "_check_" + param_name
-            self.logger.debug(f"Running '{checkfn_str}' on '{data}'")
-            if hasattr(self, checkfn_str):
-                for i,cell in enumerate(data):
+        for i, cell in enumerate(data):
+            f = None
+            for param_name in parameters:
+                checkfn_str = "_check_" + param_name
+                if hasattr(self, checkfn_str):
+                    self.logger.debug(f"Running '{checkfn_str}' on '{data}'")
+                    # Some check functions will yield multiple checks (eg. _check_regex)
                     for check, param in getattr(self, checkfn_str)(cell, i):
+                        self.logger.debug(f"On line '{i}' cell={cell}, check={check}")
                         try:
                             # If None, then another thing failed in the
                             # check (eg. nullable)
@@ -135,18 +195,19 @@ class MemExpectation():
                             else:
                                 assert check
                         except AssertionError:
-                            # TODO: Why is param in a list?
-                            f = Failure(line=i, why=[param], data=cell)
+                            if not f:
+                                f = Failure(line=i, why=param, data=cell)
+                                self._fails.append(f)
+                            else:
+                                f.why = param
                             fmsg = f"Found a failure on line '{i}' running '{param}' on '{cell}'"
                             if param.soft:
-                                self.soft_fails.append(f)
                                 self.logger.warning(fmsg)
                             else:
-                                self.fails.append(f)
                                 self.logger.error(fmsg)
                         except:
                             raise
-        return len(self.fails) == 0
+        return len(self._fails) == 0
 
 
 class MemSynther():
@@ -306,9 +367,10 @@ class MemSynther():
             self._verify_memlist_format(self.df)
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
-                self.list_cond = ListState.FAILURE
-            if len(exp.soft_fails) != 0 and self.list_cond != ListState.FAILURE:
-                self.list_cond = ListState.SOFT_FAILURE
+                if exp.is_hard_failure():
+                    self.list_cond = ListState.FAILURE
+                elif exp.is_soft_failure() and self.list_cond != ListState.FAILURE:
+                    self.list_cond = ListState.SOFT_FAILURE
         if self.list_cond == ListState.FAILURE:
             self.logger.error(
                 f"Check on membership list '{self.name}' has encountered failures"
