@@ -111,7 +111,7 @@ def test_check_ideal(memsynther_ideallist, col):
 def test_get_a_failure(memsynther, col, expected_number_of_failures):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.verify_memlist_data_integrity()
-    num_of_fails = len(memsynther.get_failures(col).values())
+    num_of_fails = len(memsynther.get_failures(col)[col])
     assert num_of_fails == expected_number_of_failures
 
 @pytest.mark.parametrize(
@@ -147,5 +147,6 @@ def test_get_all_failures(memsynther):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.verify_memlist_data_integrity()
     fails = memsynther.get_failures()
+    num_of_fails = len([x for x in itertools.chain.from_iterable(fails.values())])
     assert len(fails.keys()) == len(fixtures.FAIL_COLS) and \
-           len(fails.values()) == fixtures.NUM_HARD_FAILS
+           num_of_fails == fixtures.NUM_HARD_FAILS

@@ -10,7 +10,7 @@ import re
 
 import pandas as pd
 
-from memsynth.config import uss_regex
+from memsynth.config import uss_regex, EXPECTED_FORMAT_MEM_LIST
 import memsynth.exceptions as ex
 from memsynth.parameters import (
     Parameter, ACCEPTABLE_PARAMS, UNIQUE_PARAMS, DATATYPE_MAP
@@ -155,14 +155,23 @@ class MemSynther():
                 df_field += ' LOADED '
         return f"<MemSynther {name_field}{exp_field}{df_field}>"
 
-    def get_failures(self, fails=None):
+    def get_failures(self, fails=None, include_soft=False):
+        cols = None
         if fails is None:
-            fails = []
-        cols = set(fails).union(ACCEPTABLE_PARAMS)
+            cols = EXPECTED_FORMAT_MEM_LIST['columns']
+        else:
+            if hasattr(fails, 'capitalize'): #(ie. is a 'fail' not 'fails'
+                fails = [fails]
+            cols = set(fails).intersection(EXPECTED_FORMAT_MEM_LIST['columns'])
         failures = {}
         for col in cols:
             if len(self.expectations[col].fails) > 0:
                 failures[col] = self.expectations[col].fails
+            if include_soft:
+                if len(self.expectations[col].soft_fails):
+                    failures[col].extend(self.expectations[col].soft_fails)
+                else:
+                    failures[col] = self.expectations[col].soft_fails
         return failures
 
     def load_expectations_from_json(self, fname):
