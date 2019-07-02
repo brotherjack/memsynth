@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 
 from memsynth.main import MemSynther, MemExpectation
-from memsynth.parameters import Parameter
 from memsynth import config
 
 
@@ -67,6 +66,10 @@ FAKE_LESS_THAN_IDEAL_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa_lessthan
 FAKE_IDEAL_MEM_LIST = os.path.join(config.TEST_DIR, "fakeodsa_ideal.xlsx")
 BAD_MEM_LIST = os.path.join(config.TEST_DIR, "badlist.xlsx")
 PARAM_JSON_FILE = os.path.join(config.TEST_DIR, "params.json")
+FAIL_COLS = {"last_name", "Mobile_Phone", "Home_Phone"}
+SOFT_FAIL_COL = "Address_Line_2"
+NUM_HARD_FAILS = 4
+NUM_SOFT_FAILS = 1
 
 @pytest.fixture
 def memsynther():

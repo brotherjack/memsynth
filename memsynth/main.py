@@ -34,6 +34,7 @@ class MemExpectation():
         self.soft_fails = []
         self.required = required
         self._form_parameters(parameters)
+        self.logger = logging.getLogger(type(self).__name__)
 
     def __repr__(self):
         return f"<MemExpectation: {self.col} - Fails: {len(self.fails)} " \
@@ -93,6 +94,10 @@ class MemExpectation():
                 else:
                     yield rx.value.match(data, flags) is not None, rx
 
+    def clear(self):
+        self.logger.info("Clearing failures")
+        self.fails, self.soft_fails = [], []
+
     def check(self, data):
         """Checks to see if the condition of the expectation are met
 
@@ -135,8 +140,6 @@ class MemSynther():
         self.df = None
         self.name = name
         self.expectations = {}
-        self.failures = {}
-        self.soft_failures = {}
 
     def __repr__(self):
         name_field = f'- {self.name}' if self.name else f'object at {hex(id(self))}'
@@ -151,6 +154,16 @@ class MemSynther():
             else:
                 df_field += ' LOADED '
         return f"<MemSynther {name_field}{exp_field}{df_field}>"
+
+    def get_failures(self, fails=None):
+        if fails is None:
+            fails = []
+        cols = set(fails).union(ACCEPTABLE_PARAMS)
+        failures = {}
+        for col in cols:
+            if len(self.expectations[col].fails) > 0:
+                failures[col] = self.expectations[col].fails
+        return failures
 
     def load_expectations_from_json(self, fname):
         """Loads expectations from a JSON file
