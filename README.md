@@ -22,6 +22,8 @@ customary `pip install -r requirements.txt`.
 
 ## Use Cases
 
+### Check your membership list against your epectations, and find out what you need to fix
+
 ```python
 from memsynth.main import MemSynther
 msy = MemSynther()
@@ -31,26 +33,31 @@ msy.load_expectations_from_json("tests/params.json")
 msy.load_from_excel("tests/fakeodsa.xlsx")
 
 # Check to make sure it conforms to those expectations...it won't :/
-from memsynth import exceptions
-try:
-    msy.verify_memlist_data_integrity()
-except exceptions.MembershipListIntegrityExcepton:
-    # Check failures
-    for fail_column in msy.failures.keys():
-        print(
-            f"{len(msy.failures[fail_column].fails)} failures found on "
-            f"column '{fail_column}'"
-        )
-        for failure in msy.failures[fail_column].fails:
-            print(f"On line {failure.line}: ")
-            for param in failure.why:
-                print(
-                    f"\t- {'soft' if param.soft else 'HARD'} "
-                    f"failure on the '{param.name}' constraint, "
-                    f"value='{param.value}', with args='{param.args}' "
-            )
-            print(f"Data at line is {failure.data}")
-        print("")
+
+if not msy.check_membership_list_on_parameters(strict=True):
+    msy.report_failures()
+```
+
+#### Example output >>>
+
+```
+1 failures found on column 'last_name'
+On line 2: 
+	- HARD failure on the 'nullable' constraint, value='False', with args='None' 
+Data at line is nan
+
+1 failures found on column 'Mobile_Phone'
+On line 1: 
+	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+Data at line is 4074440909.0
+
+2 failures found on column 'Home_Phone'
+On line 0: 
+	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+Data at line is 410-5644639, 4105644639
+On line 2: 
+	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+Data at line is 4077217359
 ```
 
 ## Assisting in Development
