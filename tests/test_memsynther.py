@@ -121,7 +121,7 @@ def test_report_failures_return_proper_levels(memsynther, caplog, repsoft, loglv
     caplog.set_level(logging.INFO)
     memsynther.check_membership_list_on_parameters()
     memsynther.report_failures(report_soft_errors=repsoft)
-    found_loglvls = set([rec.loglevl for rec in caplog.records])
+    found_loglvls = set([rec.levelno for rec in caplog.records])
     assert set(loglvls) == found_loglvls
 
 @pytest.mark.parametrize(
