@@ -1,9 +1,7 @@
-import itertools
-
 from numpy import nan
 import pytest
 
-from memsynth import exceptions, config
+from memsynth import exceptions
 from memsynth.main import MemExpectation
 
 try:
@@ -95,65 +93,3 @@ def test_nullable_fail_properly(correct_ak_id_exp):
     assert not chk and "nullable" in [
         n.name for f in correct_ak_id_exp.fails for n in f.why
     ]
-
-@pytest.mark.parametrize(
-    'col', config.EXPECTED_FORMAT_MEM_LIST['columns']
-)
-@pytest.mark.usefixtures("memsynther_ideallist")
-def test_check_ideal(memsynther_ideallist, col):
-    assert memsynther_ideallist.expectations[col].check(memsynther_ideallist.df[col])
-
-@pytest.mark.parametrize(
-    'col, expected_number_of_failures',
-    [("last_name", 1), ("Mobile_Phone", 1), ("Home_Phone", 2)]
-)
-@pytest.mark.usefixtures("memsynther")
-def test_get_a_failure(memsynther, col, expected_number_of_failures):
-    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.check_membership_list_on_parameters()
-    num_of_fails = len([f for _, f in memsynther.get_failures(col)])
-    assert num_of_fails == expected_number_of_failures
-
-@pytest.mark.parametrize(
-    'col',
-    set(config.EXPECTED_FORMAT_MEM_LIST).difference(fixtures.FAIL_COLS)
-)
-@pytest.mark.usefixtures("memsynther")
-def test_get_a_failure_that_is_actually_a_success(memsynther, col):
-    # Every column should produce 0 errors
-    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.check_membership_list_on_parameters()
-    fails = len([f for _, f in memsynther.get_failures(col)])
-    assert fails == 0
-
-@pytest.mark.parametrize(
-    'col1,fails1,col2,fails2',
-    [
-        ('last_name', 1, 'Mobile_Phone', 1),
-        ('last_name', 1, 'Home_Phone', 2),
-        ('Mobile_Phone', 1, 'Home_Phone', 2)
-    ]
-)
-@pytest.mark.usefixtures("memsynther")
-def test_get_multiple_failures(memsynther, col1, fails1, col2, fails2):
-    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.check_membership_list_on_parameters()
-    fails = memsynther.return_failure_dict([col1, col2])
-    assert len(fails.keys()) == 2 and len(fails[col1]) == fails1 and \
-           len(fails[col1]) == fails1
-
-
-@pytest.mark.usefixtures("memsynther")
-def test_get_all_failures(memsynther):
-    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.check_membership_list_on_parameters()
-    fails = memsynther.return_failure_dict()
-    num_of_fails = len([x for x in itertools.chain.from_iterable(fails.values())])
-    assert len(fails.keys()) == len(fixtures.FAIL_COLS) and \
-           num_of_fails == fixtures.NUM_HARD_FAILS
-
-@pytest.mark.usefixtures("memsynther_ideallist")
-def test_check_nullable_is_successful_after_load(memsynther_ideallist):
-    memsynther_ideallist.df.at[1, "AK_ID"] = nan # This column should not be null
-    with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther_ideallist.check_membership_list_on_parameters()
