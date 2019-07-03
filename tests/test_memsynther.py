@@ -33,13 +33,13 @@ def test_memsynther_loads_datetimes_correctly(memsynther):
 
 @pytest.mark.usefixtures("memsynther_ideallist")
 def test_verify_memlist_data_integrity_on_ideal_list(memsynther_ideallist):
-    assert memsynther_ideallist.verify_memlist_data_integrity() == True
+    assert memsynther_ideallist.check_membership_list_on_parameters() == True
 
 @pytest.mark.usefixtures("memsynther_less_than_ideallist")
 def test_verify_memlist_data_integrity_on_less_than_ideal_list(memsynther_less_than_ideallist):
-    assert memsynther_less_than_ideallist.verify_memlist_data_integrity() == False
+    assert memsynther_less_than_ideallist.check_membership_list_on_parameters() == False
 
 @pytest.mark.usefixtures("memsynther")
 def test_verify_memlist_data_integrity_on_normal_list(memsynther):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.verify_memlist_data_integrity()
+        memsynther.check_membership_list_on_parameters()

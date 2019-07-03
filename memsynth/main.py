@@ -227,8 +227,7 @@ class MemSynther():
                 df_field += ' EMPTY '
             else:
                 df_field += ' LOADED '
-        cond_field = f' - Condition {self.list_cond.value}'
-        return f"<MemSynther {name_field}{exp_field}{df_field}{cond_field}>"
+        return f"<MemSynther {name_field}{exp_field}{df_field}>"
 
     def get_failures(self, fails=None, include_soft=False):
         cols = None
@@ -339,7 +338,7 @@ class MemSynther():
         else:
             return df
 
-    def verify_memlist_data_integrity(self, verify_format=False):
+    def check_membership_list_on_parameters(self, verify_format=False, include_soft_failures=True):
         """Checks the data of a loaded membership list to verify integrity
 
         Checks the data in the membership dataframe against the configuration

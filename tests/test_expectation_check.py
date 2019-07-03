@@ -110,7 +110,7 @@ def test_check_ideal(memsynther_ideallist, col):
 @pytest.mark.usefixtures("memsynther")
 def test_get_a_failure(memsynther, col, expected_number_of_failures):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.verify_memlist_data_integrity()
+        memsynther.check_membership_list_on_parameters()
     num_of_fails = len(memsynther.get_failures(col)[col])
     assert num_of_fails == expected_number_of_failures
 
@@ -121,7 +121,7 @@ def test_get_a_failure(memsynther, col, expected_number_of_failures):
 @pytest.mark.usefixtures("memsynther")
 def test_get_a_failure_that_is_actually_a_success(memsynther, col):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.verify_memlist_data_integrity()
+        memsynther.check_membership_list_on_parameters()
     fails = len(memsynther.get_failures(col).values())
     assert fails == 0
 
@@ -136,7 +136,7 @@ def test_get_a_failure_that_is_actually_a_success(memsynther, col):
 @pytest.mark.usefixtures("memsynther")
 def test_get_multiple_failures(memsynther, col1, fails1, col2, fails2):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.verify_memlist_data_integrity()
+        memsynther.check_membership_list_on_parameters()
     fails = memsynther.get_failures([col1, col2])
     assert len(fails.keys()) == 2 and len(fails[col1]) == fails1 and \
            len(fails[col1]) == fails1
@@ -145,7 +145,7 @@ def test_get_multiple_failures(memsynther, col1, fails1, col2, fails2):
 @pytest.mark.usefixtures("memsynther")
 def test_get_all_failures(memsynther):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther.verify_memlist_data_integrity()
+        memsynther.check_membership_list_on_parameters()
     fails = memsynther.get_failures()
     num_of_fails = len([x for x in itertools.chain.from_iterable(fails.values())])
     assert len(fails.keys()) == len(fixtures.FAIL_COLS) and \
@@ -155,4 +155,4 @@ def test_get_all_failures(memsynther):
 def test_check_nullable_is_successful_after_load(memsynther_ideallist):
     memsynther_ideallist.df.at[1, "AK_ID"] = nan # This column should not be null
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
-        memsynther_ideallist.verify_memlist_data_integrity()
+        memsynther_ideallist.check_membership_list_on_parameters()
