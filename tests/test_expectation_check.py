@@ -111,7 +111,7 @@ def test_check_ideal(memsynther_ideallist, col):
 def test_get_a_failure(memsynther, col, expected_number_of_failures):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.check_membership_list_on_parameters()
-    num_of_fails = len(memsynther.get_failures(col)[col])
+    num_of_fails = len([f for _, f in memsynther.get_failures(col)])
     assert num_of_fails == expected_number_of_failures
 
 @pytest.mark.parametrize(
@@ -120,9 +120,10 @@ def test_get_a_failure(memsynther, col, expected_number_of_failures):
 )
 @pytest.mark.usefixtures("memsynther")
 def test_get_a_failure_that_is_actually_a_success(memsynther, col):
+    # Every column should produce 0 errors
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.check_membership_list_on_parameters()
-    fails = len(memsynther.get_failures(col).values())
+    fails = len([f for _, f in memsynther.get_failures(col)])
     assert fails == 0
 
 @pytest.mark.parametrize(
@@ -137,7 +138,7 @@ def test_get_a_failure_that_is_actually_a_success(memsynther, col):
 def test_get_multiple_failures(memsynther, col1, fails1, col2, fails2):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.check_membership_list_on_parameters()
-    fails = memsynther.get_failures([col1, col2])
+    fails = memsynther.return_failure_dict([col1, col2])
     assert len(fails.keys()) == 2 and len(fails[col1]) == fails1 and \
            len(fails[col1]) == fails1
 
@@ -146,7 +147,7 @@ def test_get_multiple_failures(memsynther, col1, fails1, col2, fails2):
 def test_get_all_failures(memsynther):
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther.check_membership_list_on_parameters()
-    fails = memsynther.get_failures()
+    fails = memsynther.return_failure_dict()
     num_of_fails = len([x for x in itertools.chain.from_iterable(fails.values())])
     assert len(fails.keys()) == len(fixtures.FAIL_COLS) and \
            num_of_fails == fixtures.NUM_HARD_FAILS

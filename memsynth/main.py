@@ -237,18 +237,24 @@ class MemSynther():
             if hasattr(fails, 'capitalize'): # (ie. is a 'fail' not 'fails')
                 fails = [fails]
             cols = set(fails).intersection(EXPECTED_FORMAT_MEM_LIST['columns'])
-        failures = {}
+
         self.logger.debug(
             f"Getting failures on columns '{cols}' "
             f"{'including soft failures' if include_soft else ''}"
         )
         for col in cols:
             if len(self.expectations[col].fails) > 0:
-                failures[col] = self.expectations[col].fails
+                for fail in self.expectations[col].fails:
+                    yield col, fail
             if include_soft:
                 if len(self.expectations[col].soft_fails) > 0:
-                    failures.setdefault(col, []).extend(self.expectations[col].soft_fails)
+                    for fail in self.expectations[col].soft_fails:
+                        yield col, fail
 
+    def return_failure_dict(self, fails=None, include_soft=False):
+        failures = dict()
+        for col, fail in self.get_failures(fails, include_soft):
+            failures.setdefault(col, []).append(fail)
         return failures
 
     def load_expectations_from_json(self, fname):
@@ -338,7 +344,7 @@ class MemSynther():
         else:
             return df
 
-    def check_membership_list_on_parameters(self, verify_format=False, include_soft_failures=True):
+    def check_membership_list_on_parameters(self, verify_format=False):
         """Checks the data of a loaded membership list to verify integrity
 
         Checks the data in the membership dataframe against the configuration
