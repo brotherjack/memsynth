@@ -56,13 +56,6 @@ class Failure:
             self.is_soft = False
 
 
-class ListState(Enum):
-    SUCCESS = "SUCCESS"
-    FAILURE = "FAILURE"
-    SOFT_FAILURE = "SOFT_FAILURE"
-    DIRTY = "DIRTY"
-
-
 class MemExpectation():
     """An expectation that a column of data is expected to conform to
 
@@ -221,7 +214,6 @@ class MemSynther():
         self.df = None
         self.name = name if name else f'object at {hex(id(self))}'
         self.expectations = {}
-        self.list_cond = ListState.DIRTY
 
     def __repr__(self):
         name_field = f'- {self.name}'
@@ -365,18 +357,22 @@ class MemSynther():
         """
         if verify_format:
             self._verify_memlist_format(self.df)
+
+        hardFailEncountered = False
+        softFailEncountered = False
+
         for col, exp in self.expectations.items():
             if not exp.check(self.df[col]):
                 if exp.is_hard_failure():
-                    self.list_cond = ListState.FAILURE
-                elif exp.is_soft_failure() and self.list_cond != ListState.FAILURE:
-                    self.list_cond = ListState.SOFT_FAILURE
-        if self.list_cond == ListState.FAILURE:
+                    hardFailEncountered = True
+                elif exp.is_soft_failure() and not hardFailEncountered:
+                    softFailEncountered = True
+        if hardFailEncountered:
             self.logger.error(
                 f"Check on membership list '{self.name}' has encountered failures"
             )
             raise ex.MembershipListIntegrityExcepton(self)
-        elif self.list_cond == ListState.SOFT_FAILURE:
+        elif softFailEncountered:
             self.logger.warning(
                 f"Check on membership list '{self.name}' has encountered soft failures"
             )
