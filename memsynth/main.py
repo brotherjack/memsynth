@@ -3,8 +3,6 @@
 Orlando DSA's membership list updating and maintaince solution.
 
 """
-from collections import namedtuple
-from enum import Enum, auto
 import json
 import logging
 import os
