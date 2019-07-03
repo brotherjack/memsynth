@@ -465,12 +465,21 @@ class MemSynther():
             self.df = None
             raise ex.LoadMembershipListException(self, msg=str(e))
 
-if __name__ == '__main__':
-    setup_logging(default_level=logging.DEBUG)
-
-    logger = logging.getLogger(__name__)
-    logger.debug("No deal at all")
-    logger.info("Something you want to know, but no real deal")
-    logger.warning("I'm starting to get nervous")
-    logger.error("I'm really worried now")
-    logger.critical("Pants == Shit()")
+    def report_failures(self, report_soft_errors=True):
+        failures = self.return_failure_dict(include_soft=report_soft_errors)
+        for fail_column in failures.keys():
+            self.logger.info(
+                f"{len(failures[fail_column])} failures found on "
+                f"column '{fail_column}'"
+            )
+            for failure in failures[fail_column]:
+                self.logger.info(f"On line {failure.line}: ")
+                for param in failure.why:
+                    logfn = getattr(self.logger, 'warning')\
+                        if param.soft else getattr(self.logger, 'error')
+                    logfn(
+                        f"{'soft' if param.soft else 'HARD'} "
+                        f"failure on the '{param.name}' constraint, "
+                        f"value='{param.value}', with args='{param.args}' "
+                    )
+                self.logger.info(f"Data at line is {failure.data}")
