@@ -107,3 +107,7 @@ def test_check_nullable_is_successful_after_load(memsynther_ideallist):
     memsynther_ideallist.df.at[1, "AK_ID"] = nan # This column should not be null
     with pytest.raises(exceptions.MembershipListIntegrityExcepton):
         memsynther_ideallist.check_membership_list_on_parameters()
+
+@pytest.mark.usefixtures("memsynther")
+def test_memsynther_ignores_soft_falures_when_not_being_a_strict_asshole(memsynther):
+    assert memsynther.check_membership_list_on_parameters(strict=False)
