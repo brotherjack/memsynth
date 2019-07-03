@@ -1,4 +1,6 @@
 import itertools
+import logging
+
 from numpy import nan
 import pytest
 
@@ -105,3 +107,42 @@ def test_check_nullable_is_correct_after_load(memsynther_ideallist):
 @pytest.mark.usefixtures("memsynther_less_than_ideallist")
 def test_memsynther_ignores_soft_falures_when_not_being_a_strict_asshole(memsynther_less_than_ideallist):
     assert memsynther_less_than_ideallist.check_membership_list_on_parameters(strict=False)
+
+
+@pytest.mark.parametrize(
+    'repsoft,loglvls',
+    [
+        (True, (logging.INFO, logging.WARNING, logging.ERROR)),
+        (False, (logging.INFO, logging.ERROR))
+    ]
+)
+@pytest.mark.usefixtures("memsynther")
+def test_report_failures_return_proper_levels(memsynther, caplog, repsoft, loglvls):
+    caplog.set_level(logging.INFO)
+    memsynther.check_membership_list_on_parameters()
+    memsynther.report_failures(report_soft_errors=repsoft)
+    found_loglvls = set([rec.loglevl for rec in caplog.records])
+    assert set(loglvls) == found_loglvls
+
+@pytest.mark.parametrize(
+    'repsoft',
+    [
+        (True, ),
+        (False,)
+    ]
+)
+@pytest.mark.usefixtures("memsynther")
+def test_report_failures_return_proper_msgs(memsynther, caplog, repsoft):
+    # Introduce soft failure in memsynhter
+    memsynther.df.at[1, 'Address_Line_2'] = 'Bldg 9'
+    caplog.set_level(logging.INFO)
+    memsynther.check_membership_list_on_parameters()
+    memsynther.report_failures(report_soft_errors=repsoft)
+    logd_msgs = [rec.message for rec in caplog.records]
+    assert "1 failures found on column 'Mobile_Phone'" in logd_msgs
+    assert "2 failures found on column 'Home_Phone'" in logd_msgs
+    assert "1 failures found on column 'last_name'" in logd_msgs
+    if repsoft:
+        assert "1 failures found on column 'Address_Line_2'" in logd_msgs
+    else:
+        assert "1 failures found on column 'Address_Line_2'" not in logd_msgs
