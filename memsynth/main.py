@@ -344,7 +344,7 @@ class MemSynther():
         else:
             return df
 
-    def check_membership_list_on_parameters(self, verify_format=False):
+    def check_membership_list_on_parameters(self, verify_format=False, strict=True):
         """Checks the data of a loaded membership list to verify integrity
 
         Checks the data in the membership dataframe against the configuration
@@ -352,13 +352,11 @@ class MemSynther():
 
         :param verify_format: (boolean, default False) If True, runs
             `_verify_memlist_format` before anything else in this method
-        :param config: (dict) The keys are columns and the values are lists
-            of `MemExpectation` classes that need to pass for the data in the
-            column to be considered correct.
-
-        :return: (boolean) True, If all columns pass and False if columns pass,
-            but with soft errors.
-        :raises `MembershipListIntegrityExcepton`: If a column fails
+        :param strict: (boolean, default True) Considers soft failures to be
+            failures if True, ignores them if they are soft.
+        :return: (boolean) True, if there are no columns with failures. Will
+            return False if one of the `MemExpectation` classes encounters a
+            failure.
         """
         if verify_format:
             self._verify_memlist_format(self.df)
@@ -376,12 +374,12 @@ class MemSynther():
             self.logger.error(
                 f"Check on membership list '{self.name}' has encountered failures"
             )
-            raise ex.MembershipListIntegrityExcepton(self)
+            return False
         elif softFailEncountered:
             self.logger.warning(
                 f"Check on membership list '{self.name}' has encountered soft failures"
             )
-            return False
+            return False if strict else True
         else:
             self.logger.info(
                 f"Check on membership list '{self.name}' has passed successfully"
