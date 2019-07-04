@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import re
+import sys
 
 import pandas as pd
 
@@ -466,6 +467,13 @@ class MemSynther():
             raise ex.LoadMembershipListException(self, msg=str(e))
 
     def report_failures(self, report_soft_errors=True):
+        # Add handler for terminal to make sure that the
+        # console is logging errors
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setLevel(logging.INFO)
+        console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
+        logging.getLogger(__name__).addHandler(console_handler)
+
         failures = self.return_failure_dict(include_soft=report_soft_errors)
         for fail_column in failures.keys():
             self.logger.info(
