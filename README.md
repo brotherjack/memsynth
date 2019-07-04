@@ -41,23 +41,26 @@ if not msy.check_membership_list_on_parameters(strict=True):
 #### Example output >>>
 
 ```
-1 failures found on column 'last_name'
-On line 2: 
-	- HARD failure on the 'nullable' constraint, value='False', with args='None' 
-Data at line is nan
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO 1 failures found on column 'last_name'
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO On line 2: 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] ERROR HARD failure on the 'nullable' constraint, value='False', with args='None' 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO Data at line is nan
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO 1 failures found on column 'Address_Line_2'
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO On line 1: 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] WARNING soft failure on the 'regex' constraint, value='re.compile('(unit |apt )*[a-z0-9]+|\\\\#*[0-9]+')', with args='{'flags': [2]}' 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO Data at line is Bldg 4
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO 1 failures found on column 'Mobile_Phone'
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO On line 1: 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] ERROR HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO Data at line is 4074440909.0
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO 2 failures found on column 'Home_Phone'
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO On line 0: 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] ERROR HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO Data at line is 410-5644639, 4105644639
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO On line 2: 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] ERROR HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
+2019-07-04 15:50:14 AspireVX5591G MemSynther[2634] INFO Data at line is 4077217359
 
-1 failures found on column 'Mobile_Phone'
-On line 1: 
-	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
-Data at line is 4074440909.0
-
-2 failures found on column 'Home_Phone'
-On line 0: 
-	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
-Data at line is 410-5644639, 4105644639
-On line 2: 
-	- HARD failure on the 'regex' constraint, value='re.compile('^\\d{3}\\-\\d{3}\\-\\d{4}$')', with args='None' 
-Data at line is 4077217359
 ```
 
 ## Assisting in Development
@@ -66,5 +69,3 @@ The maintainers of this project are attempting to stick to Test-Driven Developme
 best we can :sweat_smile:). If you are unfamiliar with the workflow of TDD, we would ask
 that you reference TDD before contributing. A good primer can be found online at Free 
 Code Camp [here](https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/).
-
-
