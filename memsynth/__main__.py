@@ -6,9 +6,8 @@ from memsynth.utils import setup_logging
 
 if __name__ == '__main__':
     # Example from the README :P
-    setup_logging(default_level=logging.DEBUG)
+    setup_logging(default_level=logging.CRITICAL)
 
-    logger = logging.getLogger(__name__)
     msy = MemSynther()
 
     # Load the expectations and the memebership list
@@ -17,4 +16,8 @@ if __name__ == '__main__':
 
     # Check to make sure it conforms to those expectations...it won't :/
     if not msy.check_membership_list_on_parameters(strict=True):
+        logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
+        for handler in logger.handlers:
+            handler.setLevel(logging.INFO)
         msy.report_failures()

@@ -118,8 +118,11 @@ def test_memsynther_ignores_soft_falures_when_not_being_a_strict_asshole(memsynt
 )
 @pytest.mark.usefixtures("memsynther")
 def test_report_failures_return_proper_levels(memsynther, caplog, repsoft, loglvls):
-    caplog.set_level(logging.INFO)
     memsynther.check_membership_list_on_parameters()
+
+    # Not interested in the logs before the report_failures part...
+    caplog.clear()
+    caplog.set_level(logging.INFO)
     memsynther.report_failures(report_soft_errors=repsoft)
     found_loglvls = set([rec.levelno for rec in caplog.records])
     assert set(loglvls) == found_loglvls
